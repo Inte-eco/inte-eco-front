@@ -1,6 +1,6 @@
 import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { auth } from "../services/firebase";
+import { auth } from "../services/Firebase/FirebaseConfig";
 
 const Navbar = () => {
   const navigate: NavigateFunction = useNavigate();
