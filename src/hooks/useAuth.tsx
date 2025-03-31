@@ -28,11 +28,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContextType.Provider value = {{ currentUser }}>
+    <AuthContext.Provider value={{ currentUser }}>
       {children}
-    </AuthContextType.Provider>
+    </AuthContext.Provider>
   );
-  
 };
 
 export const useAuth = () => useContext(AuthContext);
