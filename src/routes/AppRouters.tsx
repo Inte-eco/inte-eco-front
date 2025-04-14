@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from '../pages/Home';
 import Login from '../pages/Login';
 import PrivateRoute from "./PrivateRoutes";
 import NotFound from "../pages/NotFound";
+import AdminDashboard from "../pages/AdminDashboard";
 
 const AppRouter = () => {
     return (
@@ -11,10 +11,10 @@ const AppRouter = () => {
                 <Route path="/" element={<Login />} />
 
                 <Route
-                path="/dashboard"
+                path="/dash-admin"
                 element={
                     <PrivateRoute>
-                        <Home />
+                        <AdminDashboard />
                     </PrivateRoute>
                 }
                 />
