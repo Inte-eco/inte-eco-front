@@ -3,6 +3,7 @@ import Login from '../pages/Login';
 import PrivateRoute from "./PrivateRoutes";
 import NotFound from "../pages/NotFound";
 import AdminDashboard from "../pages/AdminDashboard";
+import AddClient from "../features/admin/AddClient";
 
 const AppRouter = () => {
     return (
@@ -18,6 +19,16 @@ const AppRouter = () => {
                     </PrivateRoute>
                 }
                 />
+
+                <Route
+                path="/dash-admin/add-client"
+                element={
+                    <PrivateRoute>
+                        <AddClient />
+                    </PrivateRoute>
+                }
+                />
+
 
                 {/* <Route 
                 path="/dashboard/edit" 

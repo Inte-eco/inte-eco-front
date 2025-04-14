@@ -18,8 +18,8 @@ const Navbar = () => {
     <nav className="bg-orange-400 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">Inteco</h1>
       <div className="space-x-4">
-        <Link to="/dashboard" className="hover:underline">Accueil</Link>
-        <Link to="/dashboard/edit" className="hover:underline">Client</Link>
+        <Link to="/dash-admin" className="hover:underline">Accueil</Link>
+        <Link to="/dash-admin/add-client" className="hover:underline">Client</Link>
         <button onClick={handleLogout} className="hover:underline bg-transparent border-none text-white cursor-pointer">
           Déconnexion
         </button>
