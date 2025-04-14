@@ -4,6 +4,7 @@ import PrivateRoute from "./PrivateRoutes";
 import NotFound from "../pages/NotFound";
 import AdminDashboard from "../pages/AdminDashboard";
 import AddClient from "../features/admin/AddClient";
+import ClientDashboard from "../pages/ClientDashboard";
 
 const AppRouter = () => {
     return (
@@ -30,23 +31,14 @@ const AppRouter = () => {
                 />
 
 
-                {/* <Route 
-                path="/dashboard/edit" 
+                <Route
+                path="/dashboard"
                 element={
                     <PrivateRoute>
-                        <MarkdownEditor />
+                        <ClientDashboard />
                     </PrivateRoute>
                 }
                 />
-
-                <Route 
-                path="/dashboard/detail/:id" 
-                element={
-                    <PrivateRoute>
-                        <LessonDetail />
-                    </PrivateRoute>
-                } 
-                /> */}
 
                 <Route path="*" element={<NotFound />} />
             </Routes>

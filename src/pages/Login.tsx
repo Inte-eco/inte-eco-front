@@ -1,7 +1,8 @@
 import { useState, FormEvent } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../services/Firebase/FirebaseConfig";
+import { auth, db } from "../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
@@ -14,8 +15,35 @@ const Login = () => {
     setError(null);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard"); // redirection après connexion
+      // Étape 1 : Authentification
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Étape 2 : Récupération du rôle depuis Firestore
+      let role: string | null = null;
+
+      // Vérifier dans la collection 'clients'
+      const clientDocRef = doc(db, "clients", uid);
+      const clientDocSnap = await getDoc(clientDocRef);
+      if (clientDocSnap.exists()) {
+        role = clientDocSnap.data().role;
+      } else {
+        // Si non trouvé, vérifier dans la collection 'users'
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          role = userDocSnap.data().role;
+        }
+      }
+
+      // Étape 3 : Redirection basée sur le rôle
+      if (role === "client" || role === "user") {
+        navigate("/dashboard");
+      } else if (role === "admin") {
+        navigate("/dash-admin");
+      } else {
+        setError("Rôle utilisateur non reconnu.");
+      }
     } catch (err) {
       console.error(err);
       setError("Email ou mot de passe incorrect !");

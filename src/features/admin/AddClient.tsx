@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
@@ -21,9 +21,10 @@ const AddClient = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      const uid = user.uid;
 
-      await addDoc(collection(db, "clients"), {
-        uid: user.uid,
+      await setDoc(doc(db, "clients", uid), {
+        uid,
         nom,
         email,
         telephone,
