@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 
 const AddClient = () => {
   const [nom, setNom] = useState("");
@@ -18,11 +19,9 @@ const AddClient = () => {
     setLoading(true);
 
     try {
-      // Étape 1 : Créer l'utilisateur dans Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Étape 2 : Sauvegarder les infos du client dans Firestore
       await addDoc(collection(db, "clients"), {
         uid: user.uid,
         nom,
@@ -51,65 +50,82 @@ const AddClient = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-4 text-center">Ajouter un client</h2>
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar />
 
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Nom de la société"
-            className="w-full p-2 border rounded"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            required
-          />
+      <div className="flex-1 flex items-center justify-center">
+        <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
+          <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Créer un nouveau client</h2>
+          <p className="text-center text-gray-500 mb-4">Ce client aura un rôle <span className="font-medium text-blue-500">"client"</span> et pourra gérer ses stations.</p>
 
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-2 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Nom de la société</label>
+              <input
+                type="text"
+                value={nom}
+                onChange={(e) => setNom(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            className="w-full p-2 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-          <input
-            type="tel"
-            placeholder="Téléphone"
-            className="w-full p-2 border rounded"
-            value={telephone}
-            onChange={(e) => setTelephone(e.target.value)}
-            required
-          />
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-          <input
-            type="text"
-            placeholder="Adresse"
-            className="w-full p-2 border rounded"
-            value={adresse}
-            onChange={(e) => setAdresse(e.target.value)}
-            required
-          />
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Téléphone</label>
+              <input
+                type="tel"
+                value={telephone}
+                onChange={(e) => setTelephone(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded"
-            disabled={loading}
-          >
-            {loading ? "Ajout..." : "Ajouter le client"}
-          </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Adresse</label>
+              <input
+                type="text"
+                value={adresse}
+                onChange={(e) => setAdresse(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Création en cours..." : "Ajouter le client"}
+            </button>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
