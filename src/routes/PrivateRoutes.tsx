@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import Loading from '../components/Loading'
 import { ReactNode } from "react";
 
-const PrivateRoute = ({ children }: { children: ReactNode }) => {
+const PrivateRoutes = ({ children }: { children: ReactNode }) => {
     const auth = useAuth();
 
     if (!auth) {
@@ -18,4 +18,4 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
   return children;
 };
 
-export default PrivateRoute;
+export default PrivateRoutes;

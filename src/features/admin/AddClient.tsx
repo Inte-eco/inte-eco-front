@@ -3,7 +3,6 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
 
 const AddClient = () => {
   const [nom, setNom] = useState("");
@@ -51,10 +50,7 @@ const AddClient = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-
-      <div className="flex-1 flex items-center justify-center">
+    <div className="flex flex-1 items-center justify-center bg-gray-100">
         <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
           <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Créer un nouveau client</h2>
           <p className="text-center text-gray-500 mb-4">Ce client aura un rôle <span className="font-medium text-blue-500">"client"</span> et pourra gérer ses stations.</p>
@@ -126,7 +122,6 @@ const AddClient = () => {
             </button>
           </form>
         </div>
-      </div>
     </div>
   );
 };

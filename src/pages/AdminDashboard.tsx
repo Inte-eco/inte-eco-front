@@ -1,16 +1,11 @@
-import Sidebar from "../components/Sidebar";
 import ChartRealtime from "../components/ChartRealtime";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/NavBar";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col h-screen">
-      <Navbar />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+    
         <div className="flex-1 p-6 bg-gray-100 overflow-y-auto">
           <h1 className="text-2xl font-bold mb-4">Tableau de bord Admin</h1>
 
@@ -43,8 +38,6 @@ const AdminDashboard = () => {
 
           <ChartRealtime />
         </div>
-      </div>
-    </div>
   );
 };
 
