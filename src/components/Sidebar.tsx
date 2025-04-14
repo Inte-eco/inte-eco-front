@@ -34,7 +34,6 @@ const Sidebar = () => {
           isOpen ? "block" : "hidden"
         } md:block w-64 bg-white shadow-md h-screen p-4 fixed md:relative z-50`}
       >
-        <h2 className="text-xl font-bold mb-6 text-blue-600">Inte-eco</h2>
         <ul className="space-y-4">
           <li>
             <a href="/dash-admin" className="hover:text-blue-500">

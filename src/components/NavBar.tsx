@@ -1,9 +1,13 @@
-import { Link, NavigateFunction, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../services/Firebase/FirebaseConfig";
+import { FiMenu } from "react-icons/fi"; // Icône hamburger
+import { FaSearch } from "react-icons/fa"; // Icône de recherche
 
 const Navbar = () => {
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = async () => {
     try {
@@ -14,16 +18,48 @@ const Navbar = () => {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implémentez la logique de recherche ici
+    console.log("Recherche :", searchQuery);
+  };
+
+  const handleSidebarToggle = () => {
+    // Implémentez la logique pour ouvrir la sidebar ici
+    console.log("Sidebar ouverte");
+  };
+
   return (
-    <nav className="bg-orange-400 text-white p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">Inteco</h1>
-      <div className="space-x-4">
-        <Link to="/dash-admin" className="hover:underline">Accueil</Link>
-        <Link to="/dash-admin/add-client" className="hover:underline">Client</Link>
-        <button onClick={handleLogout} className="hover:underline bg-transparent border-none text-white cursor-pointer">
-          Déconnexion
+    <nav className="bg-white p-4 flex justify-between items-center">
+      {/* Bouton hamburger */}
+      <button onClick={handleSidebarToggle} className="md:hidden mr-4">
+        <FiMenu size={24} />
+      </button>
+
+      {/* Logo */}
+      <h1 className="text-xl font-bold text-blue-600">Inteco</h1>
+
+      {/* Champ de recherche */}
+      <form onSubmit={handleSearch} className="flex items-center bg-gray-100 rounded px-2 py-1 text-black">
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-transparent focus:outline-none"
+        />
+        <button type="submit" className="ml-2">
+          <FaSearch />
         </button>
-      </div>
+      </form>
+
+      {/* Bouton de déconnexion */}
+      <button
+        onClick={handleLogout}
+        className="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+      >
+        Déconnexion
+      </button>
     </nav>
   );
 };
