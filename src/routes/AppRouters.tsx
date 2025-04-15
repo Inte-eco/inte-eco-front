@@ -8,6 +8,7 @@ import ClientDashboard from "../pages/ClientDashboard";
 import Navbar from "../components/NavBar";
 import Sidebar from "../components/Sidebar";
 import AddAdmin from "../features/admin/AddAdim";
+import AddUser from "../features/admin/AddUser";
 
 const AppRouter = () => {
     return (
@@ -71,6 +72,22 @@ const AppRouter = () => {
                             <Sidebar />
                             <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
                                 <AddAdmin />
+                            </main>
+                            </div>
+                        </div>
+                        </PrivateRoutes>
+                    }
+                />
+                <Route
+                    path="/dash-admin/add-user"
+                    element={
+                        <PrivateRoutes>
+                        <div className="flex flex-col h-screen">
+                            <Navbar />
+                            <div className="flex flex-1">
+                            <Sidebar />
+                            <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
+                                <AddUser />
                             </main>
                             </div>
                         </div>
