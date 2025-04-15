@@ -33,17 +33,24 @@ const Login = () => {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           role = userDocSnap.data().role;
+        } else {
+          // Si toujours pas trouvé, vérifier dans la collection 'admins'
+          const adminDocRef = doc(db, "admins", uid);
+          const adminDocSnap = await getDoc(adminDocRef);
+          if (adminDocSnap.exists()) {
+            role = adminDocSnap.data().role;
+          }
         }
       }
 
       // Étape 3 : Redirection basée sur le rôle
       if (role === "client" || role === "user") {
         navigate("/dashboard");
-      } else if (role === "admin") {
+      } else if (role === "admin" || role === "super_admin") {
         navigate("/dash-admin");
       } else {
         setError("Rôle utilisateur non reconnu.");
-      }
+      }      
     } catch (err) {
       console.error(err);
       setError("Email ou mot de passe incorrect !");
