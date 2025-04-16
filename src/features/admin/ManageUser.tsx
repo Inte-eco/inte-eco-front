@@ -19,13 +19,13 @@ const ManageUser = () => {
       const usersList = usersSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        type: "user", // Pour identifier la source
+        type: "users", // Pour identifier la source
       }));
 
       const adminsList = adminsSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        type: "admin", // Pour identifier la source
+        type: "admins", // Pour identifier la source
       }));
 
       const combined = [...usersList, ...adminsList];
@@ -47,11 +47,11 @@ const ManageUser = () => {
     setCurrentPage(1);
   };
 
-  const handleDelete = async (id: string, type: "user" | "admin") => {
+  const handleDelete = async (id: string, type: "users" | "admins") => {
     const confirm = window.confirm("Voulez-vous vraiment supprimer cet utilisateur ?");
     if (!confirm) return;
 
-    const collectionName = type === "admin" ? "admins" : "users";
+    const collectionName = type === "admins" ? "admins" : "users";
     await deleteDoc(doc(db, collectionName, id));
     setUsers(users.filter((u) => u.id !== id));
     setFilteredUsers(filteredUsers.filter((u) => u.id !== id));
