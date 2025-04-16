@@ -46,7 +46,7 @@ const Sidebar = () => {
             </a>
           </li>
           <li>
-            <a href="/dash-admin/add-user" className="hover:text-blue-500">
+            <a href="/dash-admin/manage-user" className="hover:text-blue-500">
               👤 Gestion d'utilisateur
             </a>
           </li>
