@@ -51,7 +51,7 @@ const Sidebar = () => {
             </a>
           </li>
           <li>
-            <a href="/dash-admin/add-station" className="hover:text-blue-500">
+            <a href="/dash-admin/manage-station" className="hover:text-blue-500">
               📡 Gestion de stations
             </a>
           </li>
