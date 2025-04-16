@@ -74,6 +74,7 @@ const ManageClient = () => {
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Téléphone</th>
               <th className="px-4 py-2">Adresse</th>
+              <th className="px-4 py-2">Mot de passe</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -85,6 +86,7 @@ const ManageClient = () => {
                   <td className="px-4 py-2">{client.email}</td>
                   <td className="px-4 py-2">{client.telephone}</td>
                   <td className="px-4 py-2">{client.adresse}</td>
+                  <td className="px-4 py-2">{client.password}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
                       onClick={() => navigate(`/dash-admin/manage-client/edit/${client.id}`)}
