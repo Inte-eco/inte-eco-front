@@ -2,7 +2,7 @@ import { useState, FormEvent } from "react";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
-// import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 const AddStation = () => {
   const [nom, setNom] = useState("");
@@ -20,8 +20,7 @@ const AddStation = () => {
     e.preventDefault();
     setLoading(true);
 
-    // const stationId = `station_${uuidv4().slice(0, 8)}`;
-    const stationId = clientId
+    const stationId = `station_${uuidv4().slice(0, 8)}`;
 
     const data = {
       stationId,

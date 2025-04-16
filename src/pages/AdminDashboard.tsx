@@ -14,19 +14,19 @@ const AdminDashboard = () => {
               onClick={() => navigate("add-client")}
               className="bg-blue-500 text-white px-4 py-2 rounded"
             >
-              ➕ Ajouter un client
+              🏢 Ajouter un client
             </button>
             <button
               onClick={() => navigate("add-user")}
               className="bg-green-500 text-white px-4 py-2 rounded"
             >
-              ➕ Ajouter un utilisateur
+              👤 Ajouter un utilisateur
             </button>
             <button
               onClick={() => navigate("add-station")}
               className="bg-purple-500 text-white px-4 py-2 rounded"
             >
-              ➕ Ajouter une station
+              📡 Ajouter une station
             </button>
             <button
               onClick={() => navigate("add-admin")}
