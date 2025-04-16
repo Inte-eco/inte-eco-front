@@ -38,7 +38,7 @@ const AddUser = () => {
       });
 
       alert("Utilisateur ajouté avec succès !");
-      navigate("/dash-admin");
+      navigate("/dash-admin/manage-user");
     } catch (error: any) {
       console.error("Erreur :", error);
       if (error.code === "auth/email-already-in-use") {

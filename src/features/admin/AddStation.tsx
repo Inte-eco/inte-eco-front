@@ -41,7 +41,7 @@ const AddStation = () => {
     try {
       await setDoc(doc(db, "stations", stationId), data);
       alert("Station ajoutée avec succès !");
-      navigate("/dash-admin");
+      navigate("/dash-admin/manage-station");
     } catch (error) {
       console.error("Erreur lors de l'ajout de la station :", error);
       alert("Une erreur est survenue.");
