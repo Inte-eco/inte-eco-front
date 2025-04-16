@@ -41,7 +41,7 @@ const Sidebar = () => {
             </a>
           </li>
           <li>
-            <a href="/dash-admin/add-client" className="hover:text-blue-500">
+            <a href="/dash-admin/manage-client" className="hover:text-blue-500">
               👥 Gestion de comptes
             </a>
           </li>

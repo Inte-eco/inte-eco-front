@@ -12,6 +12,7 @@ import AddUser from "../features/admin/AddUser";
 import AddStation from "../features/admin/AddStation";
 import UserProfile from "../features/dashboard/UserProfile";
 import AdminProfile from "../features/admin/AdminProfile";
+import ManageClient from "../features/admin/ManageClient";
 
 const AppRouter = () => {
     return (
@@ -133,6 +134,22 @@ const AppRouter = () => {
                             <Sidebar />
                             <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
                                 <AdminProfile />
+                            </main>
+                            </div>
+                        </div>
+                        </PrivateRoutes>
+                    }
+                />
+                <Route
+                    path="/dash-admin/manage-client"
+                    element={
+                        <PrivateRoutes>
+                        <div className="flex flex-col h-screen">
+                            <Navbar />
+                            <div className="flex flex-1">
+                            <Sidebar />
+                            <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
+                                <ManageClient />
                             </main>
                             </div>
                         </div>
