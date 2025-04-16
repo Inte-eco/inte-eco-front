@@ -87,7 +87,7 @@ const ManageClient = () => {
                   <td className="px-4 py-2">{client.adresse}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
-                      onClick={() => navigate(`/edit-client/${client.id}`)}
+                      onClick={() => navigate(`/dash-admin/manage-client/edit/${client.id}`)}
                       className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
                     >
                       Éditer
