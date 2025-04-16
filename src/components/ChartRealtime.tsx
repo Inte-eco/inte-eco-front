@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line, Bar, Pie, Doughnut, PolarArea } from 'react-chartjs-2';
+import { Line, Bar, Pie, Bubble, Radar } from 'react-chartjs-2';
 
 ChartJS.register(
   LineElement,
@@ -25,7 +25,7 @@ ChartJS.register(
   Legend
 );
 
-type ChartType = 'line' | 'bar' | 'pie' | 'doughnut' | 'polarArea';
+type ChartType = 'line' | 'bar' | 'pie' | 'bubble' | 'radar';
 
 interface ChartConfig {
   title: string;
@@ -39,32 +39,32 @@ const ChartRealtime: React.FC = () => {
 
   const chartConfigs: ChartConfig[] = [
     {
-      title: 'Température (°C)',
-      type: 'line',
-      data: [22, 24, 23, 25, 26],
-      color: 'rgba(255, 99, 132, 1)',
-    },
-    {
-      title: 'Humidité (%)',
-      type: 'bar',
-      data: [55, 60, 58, 62, 59],
-      color: 'rgba(54, 162, 235, 1)',
-    },
-    {
       title: 'CO₂ (PPM)',
-      type: 'pie',
+      type: 'line',
       data: [400, 420, 410, 430, 415],
       color: 'rgba(255, 206, 86, 1)',
     },
     {
       title: 'H₂S (PPM)',
-      type: 'doughnut',
+      type: 'bubble',
       data: [5, 6, 5.5, 6.2, 5.8],
       color: 'rgba(75, 192, 192, 1)',
     },
     {
+      title: 'Température (°C)',
+      type: 'radar',
+      data: [22, 24, 23, 25, 26],
+      color: 'rgba(255, 99, 132, 1)',
+    },
+    {
+      title: 'Humidité (%)',
+      type: 'pie',
+      data: [55, 60, 58, 62, 59],
+      color: 'rgba(54, 162, 235, 1)',
+    },
+    {
       title: 'CO (PPM)',
-      type: 'polarArea',
+      type: 'bar',
       data: [9, 10, 9.5, 10.2, 9.8],
       color: 'rgba(153, 102, 255, 1)',
     },
@@ -88,14 +88,14 @@ const ChartRealtime: React.FC = () => {
     switch (config.type) {
       case 'line':
         return <Line key={index} data={data} />;
-      case 'bar':
-        return <Bar key={index} data={data} />;
+      case 'bubble':
+        return <Bubble key={index} data={data} />;
+      case 'radar':
+        return <Radar key={index} data={data} />;
       case 'pie':
         return <Pie key={index} data={data} />;
-      case 'doughnut':
-        return <Doughnut key={index} data={data} />;
-      case 'polarArea':
-        return <PolarArea key={index} data={data} />;
+        case 'bar':
+          return <Bar key={index} data={data} />;
       default:
         return null;
     }
