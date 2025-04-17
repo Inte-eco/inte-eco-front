@@ -21,7 +21,7 @@ const AddAdmin = () => {
       const uid = user.uid;
 
       await setDoc(doc(db, "admins", uid), {
-        adminId: uid,
+        uid: uid,
         nom,
         email,
         password,

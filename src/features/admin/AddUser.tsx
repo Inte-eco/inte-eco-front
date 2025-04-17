@@ -25,7 +25,7 @@ const AddUser = () => {
       const uid = user.uid;
 
       await setDoc(doc(db, "users", uid), {
-        utilisateurId: uid,
+        uid: uid,
         nom,
         email,
         password,

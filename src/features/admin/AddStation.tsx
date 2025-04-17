@@ -23,7 +23,7 @@ const AddStation = () => {
     const stationId = `station_${uuidv4().slice(0, 8)}`;
 
     const data = {
-      stationId,
+      uid : stationId,
       nom,
       emplacement: {
         latitude: parseFloat(latitude),
