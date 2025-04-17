@@ -15,17 +15,14 @@ const UserProfile = () => {
     }
 
     const fetchUserProfile = async () => {
-      const collections = ["users", "clients", "admins"];
-
       try {
-        for (const collection of collections) {
-          const docRef = doc(db, collection, uid);
-          const docSnap = await getDoc(docRef);
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
 
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-            break;
-          }
+        if (userDocSnap.exists()) {
+          setUserData(userDocSnap.data());
+        } else {
+          console.warn("Aucune donnée utilisateur trouvée dans Firestore.");
         }
       } catch (error) {
         console.error("Erreur lors de la récupération du profil :", error);
@@ -51,16 +48,10 @@ const UserProfile = () => {
         <p><strong>Nom :</strong> {userData.nom}</p>
         <p><strong>Email :</strong> {userData.email}</p>
         <p><strong>Rôle :</strong> {userData.role}</p>
-        {userData.clientId && <p><strong>Client :</strong> {userData.clientId}</p>}
-        {userData.stationsGerees && (
-          <p><strong>Stations gérées :</strong> {userData.stationsGerees.join(", ")}</p>
-        )}
-        {userData.notificationsActives !== undefined && (
-          <p><strong>Notifications :</strong> {userData.notificationsActives ? "Activées" : "Désactivées"}</p>
-        )}
-        {userData.dateCreation && (
-          <p><strong>Date de création :</strong> {userData.dateCreation.toDate().toLocaleString()}</p>
-        )}
+        <p><strong>Client :</strong> {userData.clientId}</p>
+        <p><strong>Stations gérées :</strong> {userData.stationsGerees?.join(", ") || "Aucune"}</p>
+        <p><strong>Notifications :</strong> {userData.notificationsActives ? "Activées" : "Désactivées"}</p>
+        <p><strong>Date de création :</strong> {userData.dateCreation?.toDate().toLocaleString() || "Inconnue"}</p>
       </div>
     </div>
   );

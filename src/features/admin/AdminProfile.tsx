@@ -1,24 +1,25 @@
 import { useEffect, useState } from "react";
-import { auth, db, storage } from "../../services/Firebase/FirebaseConfig";
+import { db, storage } from "../../services/Firebase/FirebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AdminProfile = () => {
-  const user = auth.currentUser;
   const [adminData, setAdminData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
+  const uid = sessionStorage.getItem("uid");
+
   const fetchAdminData = async () => {
-    if (user) {
-      const docRef = doc(db, "admins", user.uid);
+    if (uid) {
+      const docRef = doc(db, "admins", uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setAdminData(docSnap.data());
       }
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -26,19 +27,19 @@ const AdminProfile = () => {
   }, []);
 
   const handleSave = async () => {
-    if (!adminData) return;
+    if (!adminData || !uid) return;
 
     setLoading(true);
 
     // Upload photo if file is selected
     let photoURL = adminData.photoURL;
     if (file) {
-      const storageRef = ref(storage, `admin_profiles/${user?.uid}`);
+      const storageRef = ref(storage, `admin_profiles/${uid}`);
       await uploadBytes(storageRef, file);
       photoURL = await getDownloadURL(storageRef);
     }
 
-    await updateDoc(doc(db, "admins", user!.uid), {
+    await updateDoc(doc(db, "admins", uid), {
       nom: adminData.nom,
       email: adminData.email,
       photoURL,
@@ -63,23 +64,23 @@ const AdminProfile = () => {
           className="w-24 h-24 rounded-full object-cover border border-gray-300"
         />
         {editing && (
-        <div>
+          <div>
             <label className="cursor-pointer inline-block bg-gray-100 px-4 py-2 rounded-lg shadow hover:bg-gray-200">
-            📸 Choisir une photo de profil
-            <input
+              📸 Choisir une photo de profil
+              <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 className="hidden"
-            />
+              />
             </label>
 
             {file && (
-            <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-gray-600">
                 Fichier sélectionné : <strong>{file.name}</strong>
-            </p>
+              </p>
             )}
-        </div>
+          </div>
         )}
       </div>
 

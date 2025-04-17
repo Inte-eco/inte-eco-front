@@ -11,6 +11,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
+      sessionStorage.removeItem("uid");
       await signOut(auth);
       navigate("/");
     } catch (error) {
