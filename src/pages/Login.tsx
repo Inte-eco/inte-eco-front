@@ -13,28 +13,28 @@ const Login = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
+  
     try {
       // Étape 1 : Authentification
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-
+  
+      // 🔐 Enregistrer l'UID dans la session
+      sessionStorage.setItem("uid", uid);
+  
       // Étape 2 : Récupération du rôle depuis Firestore
       let role: string | null = null;
-
-      // Vérifier dans la collection 'clients'
+  
       const clientDocRef = doc(db, "clients", uid);
       const clientDocSnap = await getDoc(clientDocRef);
       if (clientDocSnap.exists()) {
         role = clientDocSnap.data().role;
       } else {
-        // Si non trouvé, vérifier dans la collection 'users'
         const userDocRef = doc(db, "users", uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           role = userDocSnap.data().role;
         } else {
-          // Si toujours pas trouvé, vérifier dans la collection 'admins'
           const adminDocRef = doc(db, "admins", uid);
           const adminDocSnap = await getDoc(adminDocRef);
           if (adminDocSnap.exists()) {
@@ -42,7 +42,7 @@ const Login = () => {
           }
         }
       }
-
+  
       // Étape 3 : Redirection basée sur le rôle
       if (role === "client" || role === "user") {
         navigate("/dashboard");
@@ -50,13 +50,13 @@ const Login = () => {
         navigate("/dash-admin");
       } else {
         setError("Rôle utilisateur non reconnu.");
-      }      
+      }
     } catch (err) {
       console.error(err);
       setError("Email ou mot de passe incorrect !");
     }
   };
-
+  
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">

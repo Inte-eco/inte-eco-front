@@ -1,45 +1,43 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../../services/Firebase/FirebaseConfig";
+import { db } from "../../services/Firebase/FirebaseConfig";
 
 const UserProfile = () => {
-  const [userAuth, setUserAuth] = useState<User | null>(null);
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUserAuth(currentUser);
+    const uid = sessionStorage.getItem("uid");
 
-        try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
-
-          if (userDocSnap.exists()) {
-            setUserData(userDocSnap.data());
-          } else {
-            console.warn("Aucune donnée utilisateur trouvée dans Firestore.");
-          }
-        } catch (error) {
-          console.error("Erreur lors de la récupération des données utilisateur :", error);
-        }
-      } else {
-        setUserAuth(null);
-        setUserData(null);
-      }
-
+    if (!uid) {
       setLoading(false);
-    });
+      return;
+    }
 
-    return () => unsubscribe();
+    const fetchUserProfile = async () => {
+      try {
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          setUserData(userDocSnap.data());
+        } else {
+          console.warn("Aucune donnée utilisateur trouvée dans Firestore.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération du profil :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
   if (loading) return <div className="text-center mt-10">Chargement du profil...</div>;
 
-  if (!userAuth || !userData) {
-    return <div className="text-center mt-10 text-red-500">Utilisateur non connecté ou données indisponibles.</div>;
+  if (!userData) {
+    return <div className="text-center mt-10 text-red-500">Aucun utilisateur trouvé.</div>;
   }
 
   return (
@@ -60,3 +58,4 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
