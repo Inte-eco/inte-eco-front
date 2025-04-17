@@ -10,7 +10,7 @@ import Sidebar from "../components/Sidebar";
 import AddAdmin from "../features/admin/AddAdim";
 import AddUser from "../features/admin/AddUser";
 import AddStation from "../features/admin/AddStation";
-import UserProfile from "../features/dashboard/UserProfile";
+// import UserProfile from "../features/dashboard/UserProfile";
 import AdminProfile from "../features/admin/AdminProfile";
 import ManageClient from "../features/admin/ManageClient";
 import EditClient from "../features/admin/EditClient";
@@ -39,14 +39,14 @@ const AppRouter = () => {
                 />
 
                 {/* Client Dashboard Route (without Navbar & Sidebar) */}
-                <Route
+                {/* <Route
                     path="/profile"
                     element={
                         <PrivateRoutes>
                             <UserProfile />
                         </PrivateRoutes>
                     }
-                />
+                /> */}
 
                 {/* Admin Dashboard and Admin Routes (with Navbar & Sidebar) */}
                 <Route
