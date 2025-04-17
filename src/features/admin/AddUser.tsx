@@ -1,10 +1,23 @@
-import { useState, FormEvent } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 
 const AddUser = () => {
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,20 +25,38 @@ const AddUser = () => {
   const [clientId, setClientId] = useState("");
   const [stationsGerees, setStationsGerees] = useState<string[]>([]);
   const [notificationsActives, setNotificationsActives] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e: FormEvent) => {
+  // Étape 1 : Récupérer email + mot de passe de l'admin avant création du nouvel utilisateur
+  useEffect(() => {
+    const fetchAdminCredentials = async () => {
+      const adminUid = sessionStorage.getItem("uid");
+      if (!adminUid) return;
+
+      const adminDocRef = doc(db, "admins", adminUid);
+      const adminSnap = await getDoc(adminDocRef);
+
+      if (adminSnap.exists()) {
+        const adminData = adminSnap.data();
+        setAdminEmail(adminData.email);
+        setAdminPassword(adminData.password); // ⚠️ Assure-toi que le mot de passe est bien stocké en clair (pas conseillé en prod !)
+      }
+    };
+
+    fetchAdminCredentials();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Étape 2 : Création du nouvel utilisateur
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const uid = user.uid;
+      const newUser = userCredential.user;
+      const uid = newUser.uid;
 
       await setDoc(doc(db, "users", uid), {
-        uid: uid,
+        uid,
         nom,
         email,
         password,
@@ -34,8 +65,13 @@ const AddUser = () => {
         stationsGerees,
         notificationsActives,
         dateCreation: serverTimestamp(),
-        creePar: auth.currentUser?.uid || "admin inconnu",
+        creePar: sessionStorage.getItem("uid"),
       });
+
+      // Étape 3 : Reconnexion de l’admin
+      if (adminEmail && adminPassword) {
+        await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+      }
 
       alert("Utilisateur ajouté avec succès !");
       navigate("/dash-admin/manage-user");
