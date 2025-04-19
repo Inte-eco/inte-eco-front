@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 
 const EditClient = () => {
@@ -11,6 +11,8 @@ const EditClient = () => {
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
   const [adresse, setAdresse] = useState("");
+  const [stationsAssignees, setStationsAssignees] = useState<string[]>([]);
+  const [listeStations, setListeStations] = useState<{ id: string; nom: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
@@ -28,6 +30,7 @@ const EditClient = () => {
           setEmail(data.email || "");
           setTelephone(data.telephone || "");
           setAdresse(data.adresse || "");
+          setStationsAssignees(data.stationsAssignees || []);
         } else {
           alert("Client non trouvé");
           navigate("/dash-admin/manage-client");
@@ -40,7 +43,21 @@ const EditClient = () => {
       }
     };
 
+    const fetchStations = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "stations"));
+        const stations = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          nom: doc.data().nom,
+        }));
+        setListeStations(stations);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des stations :", error);
+      }
+    };
+
     fetchClient();
+    fetchStations();
   }, [clientId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,6 +73,7 @@ const EditClient = () => {
         email,
         telephone,
         adresse,
+        stationsAssignees,
       });
 
       alert("Client mis à jour avec succès !");
@@ -119,6 +137,25 @@ const EditClient = () => {
               className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Stations assignées</label>
+            <select
+              multiple
+              value={stationsAssignees}
+              onChange={(e) =>
+                setStationsAssignees(Array.from(e.target.selectedOptions, (option) => option.value))
+              }
+              className="w-full border border-gray-300 rounded-lg p-2 h-40 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              {listeStations.map((station) => (
+                <option key={station.id} value={station.id}>
+                  {station.nom}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Maintiens Ctrl (Cmd sur Mac) pour sélectionner plusieurs stations</p>
           </div>
 
           <button

@@ -1,6 +1,15 @@
-import { useState, FormEvent } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useState, useEffect, FormEvent } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+  collection,
+  getDocs,
+} from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import useAdminCredentials from "../../hooks/useAdminCredentials";
@@ -12,9 +21,32 @@ const AddClient = () => {
   const [adresse, setAdresse] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [stations, setStations] = useState<any[]>([]);
+  const [stationsAssociees, setStationsAssociees] = useState<string[]>([]);
 
+  const navigate = useNavigate();
   const { adminEmail, adminPassword } = useAdminCredentials();
+
+  useEffect(() => {
+    const fetchStations = async () => {
+      const snapshot = await getDocs(collection(db, "stations"));
+      const stationList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        nom: doc.data().nom,
+      }));
+      setStations(stationList);
+    };
+
+    fetchStations();
+  }, []);
+
+  const toggleStation = (stationId: string) => {
+    setStationsAssociees((prev) =>
+      prev.includes(stationId)
+        ? prev.filter((id) => id !== stationId)
+        : [...prev, stationId]
+    );
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -33,7 +65,7 @@ const AddClient = () => {
         adresse,
         password,
         role: "client",
-        stations: [],
+        stations: stationsAssociees,
         dateCreation: serverTimestamp(),
         creePar: sessionStorage.getItem("adminUid") || "admin inconnu",
       });
@@ -59,77 +91,96 @@ const AddClient = () => {
 
   return (
     <div className="flex flex-1 items-center justify-center bg-gray-100">
-        <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
-          <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Créer un nouveau client</h2>
-          <p className="text-center text-gray-500 mb-4">Ce client aura un rôle <span className="font-medium text-blue-500">"client"</span> et pourra gérer ses stations.</p>
+      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Créer un nouveau client</h2>
+        <p className="text-center text-gray-500 mb-4">
+          Ce client aura un rôle <span className="font-medium text-blue-500">"client"</span> et pourra gérer ses stations.
+        </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Nom de la société</label>
-              <input
-                type="text"
-                value={nom}
-                onChange={(e) => setNom(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Nom de la société</label>
+            <input
+              type="text"
+              value={nom}
+              onChange={(e) => setNom(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Téléphone</label>
+            <input
+              type="tel"
+              value={telephone}
+              onChange={(e) => setTelephone(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Adresse</label>
+            <input
+              type="text"
+              value={adresse}
+              onChange={(e) => setAdresse(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2"
+              required
+            />
+          </div>
+
+          {/* Champ pour les stations */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Stations associées</label>
+            <div className="border rounded-lg p-2 h-32 overflow-y-auto space-y-1">
+              {stations.map((station) => (
+                <div key={station.id} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={stationsAssociees.includes(station.id)}
+                    onChange={() => toggleStation(station.id)}
+                  />
+                  <span>{station.nom}</span>
+                </div>
+              ))}
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Téléphone</label>
-              <input
-                type="tel"
-                value={telephone}
-                onChange={(e) => setTelephone(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Adresse</label>
-              <input
-                type="text"
-                value={adresse}
-                onChange={(e) => setAdresse(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition ${
-                loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "Création en cours..." : "Ajouter le client"}
-            </button>
-          </form>
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {loading ? "Création en cours..." : "Ajouter le client"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
