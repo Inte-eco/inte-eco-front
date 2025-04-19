@@ -1,8 +1,9 @@
 import { useState, FormEvent } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import useAdminCredentials from "../../hooks/useAdminCredentials";
 
 const AddAdmin = () => {
   const [nom, setNom] = useState("");
@@ -10,6 +11,8 @@ const AddAdmin = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { adminEmail, adminPassword } = useAdminCredentials();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,8 +30,13 @@ const AddAdmin = () => {
         password,
         role: "super_admin",
         dateCreation: serverTimestamp(),
-        creePar: auth.currentUser?.uid || "admin inconnu",
+        creePar: sessionStorage.getItem("adminUid") || "admin inconnu",
       });
+
+      // Reconnexion de l’admin
+      if (adminEmail && adminPassword) {
+        await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+      }
 
       alert("Administrateur créé avec succès !");
       navigate("/dash-admin/manage-user");

@@ -1,8 +1,9 @@
 import { useState, FormEvent } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import useAdminCredentials from "../../hooks/useAdminCredentials";
 
 const AddClient = () => {
   const [nom, setNom] = useState("");
@@ -12,6 +13,8 @@ const AddClient = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { adminEmail, adminPassword } = useAdminCredentials();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -32,8 +35,13 @@ const AddClient = () => {
         role: "client",
         stations: [],
         dateCreation: serverTimestamp(),
-        creePar: auth.currentUser?.uid || "admin inconnu",
+        creePar: sessionStorage.getItem("adminUid") || "admin inconnu",
       });
+
+      // Reconnexion de l’admin
+      if (adminEmail && adminPassword) {
+        await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+      }
 
       alert("Client créé avec succès !");
       navigate("/dash-admin/manage-client");

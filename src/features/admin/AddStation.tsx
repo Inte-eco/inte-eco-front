@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../../services/Firebase/FirebaseConfig";
+import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
@@ -34,7 +34,7 @@ const AddStation = () => {
       dateInstallation,
       proprietaire,
       clientId,
-      creePar: auth.currentUser?.uid || "admin inconnu",
+      creePar: sessionStorage.getItem("adminUid") || "admin inconnu",
       dateCreation: serverTimestamp(),
     };
 
