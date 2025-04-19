@@ -31,28 +31,30 @@ const AddUser = () => {
 
   const { adminEmail, adminPassword } = useAdminCredentials();
 
+  // Récupération des clients et leurs stations (dans le champ `stations`)
   useEffect(() => {
     const fetchClients = async () => {
       const snapshot = await getDocs(collection(db, "clients"));
       const clientList = snapshot.docs.map(doc => ({
         id: doc.id,
         nom: doc.data().nom,
+        stations: doc.data().stations || [], // Récupère les stations du client
       }));
       setClients(clientList);
     };
 
-    const fetchStations = async () => {
-      const snapshot = await getDocs(collection(db, "stations"));
-      const stationList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        nom: doc.data().nom,
-      }));
-      setStations(stationList);
-    };
-
     fetchClients();
-    fetchStations();
   }, []);
+
+  // Met à jour les stations affichées selon le client sélectionné
+  useEffect(() => {
+    const selectedClient = clients.find(client => client.id === clientId);
+    if (selectedClient) {
+      setStations(selectedClient.stations);
+    } else {
+      setStations([]);
+    }
+  }, [clientId, clients]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,11 +162,13 @@ const AddUser = () => {
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Stations gérées</label>
             <div className="border rounded-lg p-2 h-32 overflow-y-auto space-y-1">
-              {stations.map(station => (
+              {stations.map((station: any) => (
                 <div key={station.id} className="flex items-center space-x-2">
-                  <input type="checkbox"
+                  <input
+                    type="checkbox"
                     checked={stationsGerees.includes(station.id)}
-                    onChange={() => toggleStationSelection(station.id)} />
+                    onChange={() => toggleStationSelection(station.id)}
+                  />
                   <label>{station.nom} ({station.id})</label>
                 </div>
               ))}

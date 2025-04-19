@@ -1,5 +1,13 @@
 import { useState, useEffect, FormEvent } from "react";
-import { doc, setDoc, serverTimestamp, collection, getDocs } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+  collection,
+  getDocs,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -58,7 +66,15 @@ const AddStation = () => {
     };
 
     try {
+      // Créer la station
       await setDoc(doc(db, "stations", stationId), data);
+
+      // Ajouter la station au tableau du client
+      const clientRef = doc(db, "clients", clientId);
+      await updateDoc(clientRef, {
+        stations: arrayUnion(stationId),
+      });
+
       alert("Station ajoutée avec succès !");
       navigate("/dash-admin/manage-station");
     } catch (error) {
@@ -72,11 +88,15 @@ const AddStation = () => {
   return (
     <div className="flex flex-1 items-center justify-center bg-gray-100">
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
-        <h2 className="text-3xl font-bold text-center text-purple-500 mb-6">Ajouter une station</h2>
+        <h2 className="text-3xl font-bold text-center text-purple-500 mb-6">
+          Ajouter une station
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Nom de la station</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Nom de la station
+            </label>
             <input
               type="text"
               value={nom}
@@ -88,7 +108,9 @@ const AddStation = () => {
 
           <div className="flex space-x-4">
             <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-600 mb-1">Latitude</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Latitude
+              </label>
               <input
                 type="number"
                 step="any"
@@ -99,7 +121,9 @@ const AddStation = () => {
               />
             </div>
             <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-600 mb-1">Longitude</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Longitude
+              </label>
               <input
                 type="number"
                 step="any"
@@ -112,7 +136,9 @@ const AddStation = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Types de capteurs (séparés par virgules)</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Types de capteurs (séparés par virgules)
+            </label>
             <input
               type="text"
               value={typeCapteurs}
@@ -124,7 +150,9 @@ const AddStation = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">État de la station</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              État de la station
+            </label>
             <select
               value={etat}
               onChange={(e) => setEtat(e.target.value)}
@@ -136,7 +164,9 @@ const AddStation = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Date d'installation</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Date d'installation
+            </label>
             <input
               type="date"
               value={dateInstallation}
@@ -147,13 +177,17 @@ const AddStation = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Propriétaire</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Propriétaire (Client)
+            </label>
             <select
               value={proprietaire}
               onChange={(e) => {
                 const selectedNom = e.target.value;
                 setProprietaire(selectedNom);
-                const selectedClient = clients.find((c) => c.nom === selectedNom);
+                const selectedClient = clients.find(
+                  (c) => c.nom === selectedNom
+                );
                 if (selectedClient) {
                   setClientId(selectedClient.uid);
                 }
@@ -188,3 +222,4 @@ const AddStation = () => {
 };
 
 export default AddStation;
+
