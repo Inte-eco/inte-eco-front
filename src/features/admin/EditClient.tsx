@@ -11,7 +11,7 @@ const EditClient = () => {
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
   const [adresse, setAdresse] = useState("");
-  const [stationsAssignees, setStationsAssignees] = useState<string[]>([]);
+  const [stations, setStations] = useState<string[]>([]);
   const [listeStations, setListeStations] = useState<{ id: string; nom: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -30,7 +30,7 @@ const EditClient = () => {
           setEmail(data.email || "");
           setTelephone(data.telephone || "");
           setAdresse(data.adresse || "");
-          setStationsAssignees(data.stationsAssignees || []);
+          setStations(data.stations || []);
         } else {
           alert("Client non trouvé");
           navigate("/dash-admin/manage-client");
@@ -73,7 +73,7 @@ const EditClient = () => {
         email,
         telephone,
         adresse,
-        stationsAssignees,
+        stations,
       });
 
       alert("Client mis à jour avec succès !");
@@ -143,9 +143,9 @@ const EditClient = () => {
             <label className="block text-sm font-medium text-gray-600 mb-1">Stations assignées</label>
             <select
               multiple
-              value={stationsAssignees}
+              value={stations}
               onChange={(e) =>
-                setStationsAssignees(Array.from(e.target.selectedOptions, (option) => option.value))
+                setStations(Array.from(e.target.selectedOptions, (option) => option.value))
               }
               className="w-full border border-gray-300 rounded-lg p-2 h-40 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
