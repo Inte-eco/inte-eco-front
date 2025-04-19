@@ -1,7 +1,7 @@
 import { useEffect, useState, FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../services/Firebase/FirebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 
 const EditStation = () => {
   const { stationId } = useParams();
@@ -15,6 +15,7 @@ const EditStation = () => {
   const [dateInstallation, setDateInstallation] = useState("");
   const [proprietaire, setProprietaire] = useState("");
   const [clientId, setClientId] = useState("");
+  const [clients, setClients] = useState<{ nom: string; uid: string }[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -26,9 +27,9 @@ const EditStation = () => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setNom(data.nom);
-        setLatitude(data.emplacement?.latitude.toString() || "");
-        setLongitude(data.emplacement?.longitude.toString() || "");
-        setTypeCapteurs(data.typeCapteurs.join(", "));
+        setLatitude(data.emplacement?.latitude?.toString() || "");
+        setLongitude(data.emplacement?.longitude?.toString() || "");
+        setTypeCapteurs(data.typeCapteurs?.join(", ") || "");
         setEtat(data.etat);
         setDateInstallation(data.dateInstallation || "");
         setProprietaire(data.proprietaire);
@@ -39,7 +40,21 @@ const EditStation = () => {
       }
     };
 
+    const fetchClients = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "clients"));
+        const clientList = querySnapshot.docs.map((doc) => ({
+          uid: doc.id,
+          nom: doc.data().nom,
+        }));
+        setClients(clientList);
+      } catch (error) {
+        console.error("Erreur lors du chargement des clients :", error);
+      }
+    };
+
     fetchStation();
+    fetchClients();
   }, [stationId, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -77,14 +92,13 @@ const EditStation = () => {
         <h2 className="text-3xl font-bold text-center text-purple-500 mb-6">Modifier la station</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Les mêmes champs que dans AddStation, avec les valeurs par défaut pré-remplies */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Nom</label>
             <input
               type="text"
               value={nom}
               onChange={(e) => setNom(e.target.value)}
-              className="w-full border p-2 rounded-lg"
+              className="w-full border border-gray-300 rounded-lg p-2"
               required
             />
           </div>
@@ -97,7 +111,7 @@ const EditStation = () => {
                 step="any"
                 value={latitude}
                 onChange={(e) => setLatitude(e.target.value)}
-                className="w-full border p-2 rounded-lg"
+                className="w-full border border-gray-300 rounded-lg p-2"
                 required
               />
             </div>
@@ -108,7 +122,7 @@ const EditStation = () => {
                 step="any"
                 value={longitude}
                 onChange={(e) => setLongitude(e.target.value)}
-                className="w-full border p-2 rounded-lg"
+                className="w-full border border-gray-300 rounded-lg p-2"
                 required
               />
             </div>
@@ -120,7 +134,7 @@ const EditStation = () => {
               type="text"
               value={typeCapteurs}
               onChange={(e) => setTypeCapteurs(e.target.value)}
-              className="w-full border p-2 rounded-lg"
+              className="w-full border border-gray-300 rounded-lg p-2"
               required
             />
           </div>
@@ -130,7 +144,7 @@ const EditStation = () => {
             <select
               value={etat}
               onChange={(e) => setEtat(e.target.value)}
-              className="w-full border p-2 rounded-lg"
+              className="w-full border border-gray-300 rounded-lg p-2"
             >
               <option value="actif">Actif</option>
               <option value="inactif">Inactif</option>
@@ -143,32 +157,36 @@ const EditStation = () => {
               type="date"
               value={dateInstallation}
               onChange={(e) => setDateInstallation(e.target.value)}
-              className="w-full border p-2 rounded-lg"
+              className="w-full border border-gray-300 rounded-lg p-2"
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Propriétaire</label>
-            <input
-              type="text"
+            <select
               value={proprietaire}
-              onChange={(e) => setProprietaire(e.target.value)}
-              className="w-full border p-2 rounded-lg"
+              onChange={(e) => {
+                const selectedNom = e.target.value;
+                setProprietaire(selectedNom);
+                const selectedClient = clients.find((c) => c.nom === selectedNom);
+                if (selectedClient) {
+                  setClientId(selectedClient.uid);
+                }
+              }}
+              className="w-full border border-gray-300 rounded-lg p-2"
               required
-            />
+            >
+              <option value="">-- Sélectionner un client --</option>
+              {clients.map((client) => (
+                <option key={client.uid} value={client.nom}>
+                  {client.nom}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Client ID</label>
-            <input
-              type="text"
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="w-full border p-2 rounded-lg"
-              required
-            />
-          </div>
+          <input type="hidden" value={clientId} readOnly />
 
           <button
             type="submit"
@@ -177,7 +195,7 @@ const EditStation = () => {
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
-            {loading ? "Mise à jour..." : "Mettre à jour"}
+            {loading ? "Mise à jour en cours..." : "Mettre à jour la station"}
           </button>
         </form>
       </div>

@@ -1,5 +1,5 @@
-import { useState, FormEvent } from "react";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useState, useEffect, FormEvent } from "react";
+import { doc, setDoc, serverTimestamp, collection, getDocs } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -14,7 +14,26 @@ const AddStation = () => {
   const [proprietaire, setProprietaire] = useState("");
   const [clientId, setClientId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState<{ nom: string; uid: string }[]>([]);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "clients"));
+        const clientList = querySnapshot.docs.map((doc) => ({
+          uid: doc.id,
+          nom: doc.data().nom,
+        }));
+        setClients(clientList);
+      } catch (error) {
+        console.error("Erreur lors du chargement des clients :", error);
+      }
+    };
+
+    fetchClients();
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -23,7 +42,7 @@ const AddStation = () => {
     const stationId = `station_${uuidv4().slice(0, 8)}`;
 
     const data = {
-      uid : stationId,
+      uid: stationId,
       nom,
       emplacement: {
         latitude: parseFloat(latitude),
@@ -129,25 +148,29 @@ const AddStation = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Propriétaire</label>
-            <input
-              type="text"
+            <select
               value={proprietaire}
-              onChange={(e) => setProprietaire(e.target.value)}
+              onChange={(e) => {
+                const selectedNom = e.target.value;
+                setProprietaire(selectedNom);
+                const selectedClient = clients.find((c) => c.nom === selectedNom);
+                if (selectedClient) {
+                  setClientId(selectedClient.uid);
+                }
+              }}
               className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
               required
-            />
+            >
+              <option value="">-- Sélectionner un client --</option>
+              {clients.map((client) => (
+                <option key={client.uid} value={client.nom}>
+                  {client.nom}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Client ID</label>
-            <input
-              type="text"
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              required
-            />
-          </div>
+          <input type="hidden" value={clientId} readOnly />
 
           <button
             type="submit"
