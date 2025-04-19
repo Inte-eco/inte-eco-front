@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -7,6 +7,8 @@ import {
   doc,
   setDoc,
   serverTimestamp,
+  collection,
+  getDocs,
 } from "firebase/firestore";
 import { auth, db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
@@ -24,14 +26,39 @@ const AddUser = () => {
   const [stationsGerees, setStationsGerees] = useState<string[]>([]);
   const [notificationsActives, setNotificationsActives] = useState(true);
 
+  const [clients, setClients] = useState<any[]>([]);
+  const [stations, setStations] = useState<any[]>([]);
+
   const { adminEmail, adminPassword } = useAdminCredentials();
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      const snapshot = await getDocs(collection(db, "clients"));
+      const clientList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        nom: doc.data().nom,
+      }));
+      setClients(clientList);
+    };
+
+    const fetchStations = async () => {
+      const snapshot = await getDocs(collection(db, "stations"));
+      const stationList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        nom: doc.data().nom,
+      }));
+      setStations(stationList);
+    };
+
+    fetchClients();
+    fetchStations();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Création du nouvel utilisateur
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const newUser = userCredential.user;
       const uid = newUser.uid;
@@ -49,7 +76,6 @@ const AddUser = () => {
         creePar: sessionStorage.getItem("adminUid"),
       });
 
-      // Reconnexion de l’admin
       if (adminEmail && adminPassword) {
         await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
       }
@@ -58,19 +84,20 @@ const AddUser = () => {
       navigate("/dash-admin/manage-user");
     } catch (error: any) {
       console.error("Erreur :", error);
-      if (error.code === "auth/email-already-in-use") {
-        alert("Cet email est déjà utilisé.");
-      } else {
-        alert("Erreur lors de la création de l'utilisateur.");
-      }
+      alert(error.code === "auth/email-already-in-use"
+        ? "Cet email est déjà utilisé."
+        : "Erreur lors de la création de l'utilisateur.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleStationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const stations = e.target.value.split(",").map((s) => s.trim());
-    setStationsGerees(stations);
+  const toggleStationSelection = (id: string) => {
+    setStationsGerees(prev =>
+      prev.includes(id)
+        ? prev.filter(s => s !== id)
+        : [...prev, id]
+    );
   };
 
   return (
@@ -83,89 +110,77 @@ const AddUser = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Nom */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Nom complet</label>
-            <input
-              type="text"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
+            <input type="text" value={nom} onChange={(e) => setNom(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2" required />
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2" required />
           </div>
 
+          {/* Mot de passe */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2" required />
           </div>
 
+          {/* Rôle */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Rôle</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-            >
+            <select value={role} onChange={(e) => setRole(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2">
               <option value="gestionnaire">Gestionnaire</option>
               <option value="technicien">Technicien</option>
               <option value="superviseur">Superviseur</option>
             </select>
           </div>
 
+          {/* Client ID */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">ID du client</label>
-            <input
-              type="text"
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
+            <label className="block text-sm font-medium text-gray-600 mb-1">Client</label>
+            <select value={clientId} onChange={(e) => setClientId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-2" required>
+              <option value="">-- Sélectionner un client --</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.nom} ({client.id})
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Stations gérées */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Stations gérées (séparées par virgules)</label>
-            <input
-              type="text"
-              onChange={handleStationChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-            />
+            <label className="block text-sm font-medium text-gray-600 mb-1">Stations gérées</label>
+            <div className="border rounded-lg p-2 h-32 overflow-y-auto space-y-1">
+              {stations.map(station => (
+                <div key={station.id} className="flex items-center space-x-2">
+                  <input type="checkbox"
+                    checked={stationsGerees.includes(station.id)}
+                    onChange={() => toggleStationSelection(station.id)} />
+                  <label>{station.nom} ({station.id})</label>
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Notifications */}
           <div className="flex items-center">
-            <input
-              type="checkbox"
-              checked={notificationsActives}
-              onChange={(e) => setNotificationsActives(e.target.checked)}
-              className="mr-2"
-            />
+            <input type="checkbox" checked={notificationsActives}
+              onChange={(e) => setNotificationsActives(e.target.checked)} className="mr-2" />
             <label className="text-sm text-gray-600">Notifications actives</label>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-          >
+          {/* Submit */}
+          <button type="submit" disabled={loading}
+            className={`w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition ${loading ? "opacity-70 cursor-not-allowed" : ""}`}>
             {loading ? "Ajout en cours..." : "Ajouter l’utilisateur"}
           </button>
         </form>
