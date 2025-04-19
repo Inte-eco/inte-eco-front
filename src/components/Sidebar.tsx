@@ -11,7 +11,7 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
-      sessionStorage.removeItem("uid");
+      sessionStorage.removeItem("adminUid");
       await signOut(auth);
       navigate("/"); // Redirige vers la page d'accueil après la déconnexion
     } catch (error) {

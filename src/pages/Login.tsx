@@ -19,9 +19,6 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
   
-      // 🔐 Enregistrer l'UID dans la session
-      sessionStorage.setItem("uid", uid);
-  
       // Étape 2 : Récupération du rôle depuis Firestore
       let role: string | null = null;
   
@@ -39,6 +36,8 @@ const Login = () => {
           const adminDocSnap = await getDoc(adminDocRef);
           if (adminDocSnap.exists()) {
             role = adminDocSnap.data().role;
+            // 🔐 Enregistrer l'UID dans la session
+            sessionStorage.setItem("adminUid", uid);
           }
         }
       }

@@ -46,7 +46,7 @@ const AddUser = () => {
         stationsGerees,
         notificationsActives,
         dateCreation: serverTimestamp(),
-        creePar: sessionStorage.getItem("uid"),
+        creePar: sessionStorage.getItem("adminUid"),
       });
 
       // Reconnexion de l’admin

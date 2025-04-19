@@ -8,7 +8,7 @@ const ManageUser = () => {
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 15;
   const navigate = useNavigate();
 
   useEffect(() => {

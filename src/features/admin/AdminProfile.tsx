@@ -9,7 +9,7 @@ const AdminProfile = () => {
   const [editing, setEditing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
-  const uid = sessionStorage.getItem("uid");
+  const uid = sessionStorage.getItem("adminUid");
 
   const fetchAdminData = async () => {
     if (uid) {

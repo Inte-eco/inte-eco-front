@@ -10,7 +10,7 @@ const useAdminCredentials = () => {
 
   useEffect(() => {
     const fetchAdminCredentials = async () => {
-      const adminUid = sessionStorage.getItem("uid");
+      const adminUid = sessionStorage.getItem("adminUid");
       if (!adminUid) {
         setLoading(false);
         return;
