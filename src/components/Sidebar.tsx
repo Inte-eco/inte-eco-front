@@ -1,19 +1,19 @@
-// Sidebar.tsx
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../services/Firebase/FirebaseConfig";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [userSubMenuOpen, setUserSubMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       sessionStorage.removeItem("adminUid");
       await signOut(auth);
-      navigate("/"); // Redirige vers la page d'accueil après la déconnexion
+      navigate("/");
     } catch (error) {
       console.error("Erreur lors de la déconnexion :", error);
     }
@@ -21,7 +21,7 @@ const Sidebar = () => {
 
   return (
     <div className="flex">
-      {/* Bouton toggle visible sur petits écrans */}
+      {/* Bouton toggle pour petits écrans */}
       <button
         className="md:hidden p-4 text-blue-600"
         onClick={() => setIsOpen(!isOpen)}
@@ -41,14 +41,35 @@ const Sidebar = () => {
               🏠 Accueil
             </a>
           </li>
+
+          {/* Menu avec sous-items */}
+          <li>
+            <button
+              onClick={() => setUserSubMenuOpen(!userSubMenuOpen)}
+              className="flex items-center justify-between w-full hover:text-blue-500"
+            >
+              <span>👤 Gestion d'utilisateur</span>
+              {userSubMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+            {userSubMenuOpen && (
+              <ul className="ml-4 mt-2 space-y-2 text-sm text-gray-600">
+                <li>
+                  <a href="/dash-admin/manage-user/admins" className="hover:text-blue-500">
+                    • Administrateurs
+                  </a>
+                </li>
+                <li>
+                  <a href="/dash-admin/manage-user/users" className="hover:text-blue-500">
+                    • Utilisateurs simples
+                  </a>
+                </li>
+              </ul>
+            )}
+          </li>
+
           <li>
             <a href="/dash-admin/manage-client" className="hover:text-blue-500">
-              👥 Gestion de comptes
-            </a>
-          </li>
-          <li>
-            <a href="/dash-admin/manage-user" className="hover:text-blue-500">
-              👤 Gestion d'utilisateur
+              👥 Gestion des clients
             </a>
           </li>
           <li>
