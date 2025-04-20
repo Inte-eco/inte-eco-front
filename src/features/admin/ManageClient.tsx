@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 
@@ -13,8 +20,12 @@ const ManageClient = () => {
 
   useEffect(() => {
     const fetchClients = async () => {
-      const querySnapshot = await getDocs(collection(db, "clients"));
-      const clientList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const q = query(collection(db, "clients"), orderBy("dateCreation", "desc"));
+      const querySnapshot = await getDocs(q);
+      const clientList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setClients(clientList);
       setFilteredClients(clientList);
     };
@@ -26,7 +37,8 @@ const ManageClient = () => {
     const value = e.target.value.toLowerCase();
     setSearch(value);
     const filtered = clients.filter((client) =>
-      client.nom.toLowerCase().includes(value) || client.email.toLowerCase().includes(value)
+      client.nom.toLowerCase().includes(value) ||
+      client.email.toLowerCase().includes(value)
     );
     setFilteredClients(filtered);
     setCurrentPage(1);
@@ -70,6 +82,7 @@ const ManageClient = () => {
         <table className="w-full bg-white rounded-lg shadow overflow-hidden">
           <thead className="bg-blue-100 text-left">
             <tr>
+              <th className="px-4 py-2">N°</th>
               <th className="px-4 py-2">Nom</th>
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Téléphone</th>
@@ -80,8 +93,9 @@ const ManageClient = () => {
           </thead>
           <tbody>
             {currentClients.length > 0 ? (
-              currentClients.map((client) => (
+              currentClients.map((client, index) => (
                 <tr key={client.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{indexOfFirst + index + 1}</td>
                   <td className="px-4 py-2">{client.nom}</td>
                   <td className="px-4 py-2">{client.email}</td>
                   <td className="px-4 py-2">{client.telephone}</td>
@@ -89,7 +103,9 @@ const ManageClient = () => {
                   <td className="px-4 py-2">{client.password}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
-                      onClick={() => navigate(`/dash-admin/manage-client/edit/${client.id}`)}
+                      onClick={() =>
+                        navigate(`/dash-admin/manage-client/edit/${client.id}`)
+                      }
                       className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
                     >
                       Éditer
@@ -105,7 +121,7 @@ const ManageClient = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-4 py-2 text-center text-gray-500">
+                <td colSpan={7} className="px-4 py-2 text-center text-gray-500">
                   Aucun client trouvé.
                 </td>
               </tr>
@@ -133,3 +149,4 @@ const ManageClient = () => {
 };
 
 export default ManageClient;
+

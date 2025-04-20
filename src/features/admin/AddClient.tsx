@@ -21,23 +21,30 @@ const AddClient = () => {
   const [adresse, setAdresse] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [stations, setStations] = useState<any[]>([]);
+  const [stations, setStations] = useState<string[]>([]);
   const [stationsAssociees, setStationsAssociees] = useState<string[]>([]);
 
   const navigate = useNavigate();
   const { adminEmail, adminPassword } = useAdminCredentials();
 
   useEffect(() => {
-    const fetchStations = async () => {
-      const snapshot = await getDocs(collection(db, "stations"));
-      const stationList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        nom: doc.data().nom,
-      }));
-      setStations(stationList);
+    const fetchStationsFromClients = async () => {
+      const clientsSnapshot = await getDocs(collection(db, "clients"));
+      const allStations: Set<string> = new Set();
+
+      clientsSnapshot.forEach((doc) => {
+        const clientData = doc.data();
+        if (Array.isArray(clientData.stations)) {
+          clientData.stations.forEach((stationId: string) => {
+            allStations.add(stationId);
+          });
+        }
+      });
+
+      setStations(Array.from(allStations));
     };
 
-    fetchStations();
+    fetchStationsFromClients();
   }, []);
 
   const toggleStation = (stationId: string) => {
@@ -70,7 +77,6 @@ const AddClient = () => {
         creePar: sessionStorage.getItem("adminUid") || "admin inconnu",
       });
 
-      // Reconnexion de l’admin
       if (adminEmail && adminPassword) {
         await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
       }
@@ -153,20 +159,24 @@ const AddClient = () => {
             />
           </div>
 
-          {/* Champ pour les stations */}
+          {/* Stations associées */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Stations associées</label>
             <div className="border rounded-lg p-2 h-32 overflow-y-auto space-y-1">
-              {stations.map((station) => (
-                <div key={station.id} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={stationsAssociees.includes(station.id)}
-                    onChange={() => toggleStation(station.id)}
-                  />
-                  <span>{station.nom}</span>
-                </div>
-              ))}
+              {stations.length > 0 ? (
+                stations.map((stationId) => (
+                  <div key={stationId} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={stationsAssociees.includes(stationId)}
+                      onChange={() => toggleStation(stationId)}
+                    />
+                    <span>{stationId}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400 text-sm">Aucune station trouvée.</p>
+              )}
             </div>
           </div>
 
