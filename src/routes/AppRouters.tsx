@@ -18,6 +18,7 @@ import ManageStation from "../features/admin/ManageStation";
 import EditStation from "../features/admin/EditStation";
 import ManageUser from "../features/admin/ManageUser";
 import EditUser from "../features/admin/EditUser";
+import ManageAdmin from "../features/admin/ManageAdmin";
 
 const AppRouter = () => {
     return (
@@ -210,7 +211,7 @@ const AppRouter = () => {
                     }
                 />
                 <Route
-                    path="/dash-admin/manage-user"
+                    path="/dash-admin/manage-user/users"
                     element={
                         <PrivateRoutes>
                         <div className="flex flex-col h-screen">
@@ -219,6 +220,22 @@ const AppRouter = () => {
                             <Sidebar />
                             <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
                                 <ManageUser/>
+                            </main>
+                            </div>
+                        </div>
+                        </PrivateRoutes>
+                    }
+                />
+                <Route
+                    path="/dash-admin/manage-user/admins"
+                    element={
+                        <PrivateRoutes>
+                        <div className="flex flex-col h-screen">
+                            <Navbar />
+                            <div className="flex flex-1">
+                            <Sidebar />
+                            <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
+                                <ManageAdmin/>
                             </main>
                             </div>
                         </div>

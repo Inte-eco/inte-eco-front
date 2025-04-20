@@ -3,64 +3,64 @@ import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/fi
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 
-const ManageUser = () => {
-  const [users, setUsers] = useState<any[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+const ManageAdmin = () => {
+  const [admins, setAdmins] = useState<any[]>([]);
+  const [filteredAdmins, setFilteredAdmins] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const q = query(collection(db, "users"), orderBy("dateCreation", "desc"));
+    const fetchAdmins = async () => {
+      const q = query(collection(db, "admins"), orderBy("dateCreation", "desc"));
       const querySnapshot = await getDocs(q);
-      const userList = querySnapshot.docs.map((doc) => ({
+      const adminList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        type: "users",
+        type: "admins",
       }));
 
-      setUsers(userList);
-      setFilteredUsers(userList);
+      setAdmins(adminList);
+      setFilteredAdmins(adminList);
     };
 
-    fetchUsers();
+    fetchAdmins();
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearch(value);
-    const filtered = users.filter((u) =>
-      u.nom.toLowerCase().includes(value) || u.email.toLowerCase().includes(value)
+    const filtered = admins.filter((a) =>
+      a.nom.toLowerCase().includes(value) || a.email.toLowerCase().includes(value)
     );
-    setFilteredUsers(filtered);
+    setFilteredAdmins(filtered);
     setCurrentPage(1);
   };
 
   const handleDelete = async (id: string) => {
-    const confirm = window.confirm("Voulez-vous vraiment supprimer cet utilisateur ?");
+    const confirm = window.confirm("Voulez-vous vraiment supprimer cet administrateur ?");
     if (!confirm) return;
 
-    await deleteDoc(doc(db, "users", id));
-    setUsers(users.filter((u) => u.id !== id));
-    setFilteredUsers(filteredUsers.filter((u) => u.id !== id));
+    await deleteDoc(doc(db, "admins", id));
+    setAdmins(admins.filter((a) => a.id !== id));
+    setFilteredAdmins(filteredAdmins.filter((a) => a.id !== id));
   };
 
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const currentAdmins = filteredAdmins.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Gestion des Utilisateurs</h2>
+        <h2 className="text-2xl font-bold">Gestion des Administrateurs</h2>
         <button
-          onClick={() => navigate("/dash-admin/add-user")}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          onClick={() => navigate("/dash-admin/add-admin")}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
-          Ajouter un utilisateur
+          Ajouter un administrateur
         </button>
       </div>
 
@@ -74,36 +74,34 @@ const ManageUser = () => {
 
       <div className="overflow-x-auto">
         <table className="w-full bg-white rounded-lg shadow overflow-hidden">
-          <thead className="bg-green-100 text-left">
+          <thead className="bg-red-100 text-left">
             <tr>
               <th className="px-4 py-2">N°</th>
               <th className="px-4 py-2">Nom</th>
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Rôle</th>
-              <th className="px-4 py-2">Client</th>
               <th className="px-4 py-2">Origine</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {currentUsers.length > 0 ? (
-              currentUsers.map((user, index) => (
-                <tr key={user.id} className="border-b hover:bg-gray-50">
+            {currentAdmins.length > 0 ? (
+              currentAdmins.map((admin, index) => (
+                <tr key={admin.id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2">{index + 1}</td>
-                  <td className="px-4 py-2">{user.nom}</td>
-                  <td className="px-4 py-2">{user.email}</td>
-                  <td className="px-4 py-2">{user.role}</td>
-                  <td className="px-4 py-2">{user.clientId || "-"}</td>
-                  <td className="px-4 py-2 capitalize">{user.type}</td>
+                  <td className="px-4 py-2">{admin.nom}</td>
+                  <td className="px-4 py-2">{admin.email}</td>
+                  <td className="px-4 py-2">{admin.role}</td>
+                  <td className="px-4 py-2 capitalize">{admin.type}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
-                      onClick={() => navigate(`/dash-admin/manage-user/edit/${user.id}?type=${user.type}`)}
+                      onClick={() => navigate(`/dash-admin/manage-admin/edit/${admin.id}`)}
                       className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
                     >
                       Éditer
                     </button>
                     <button
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => handleDelete(admin.id)}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >
                       Supprimer
@@ -113,8 +111,8 @@ const ManageUser = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="px-4 py-2 text-center text-gray-500">
-                  Aucun utilisateur trouvé.
+                <td colSpan={6} className="px-4 py-2 text-center text-gray-500">
+                  Aucun administrateur trouvé.
                 </td>
               </tr>
             )}
@@ -129,7 +127,7 @@ const ManageUser = () => {
             key={i}
             onClick={() => setCurrentPage(i + 1)}
             className={`px-3 py-1 rounded ${
-              currentPage === i + 1 ? "bg-green-600 text-white" : "bg-gray-200"
+              currentPage === i + 1 ? "bg-red-600 text-white" : "bg-gray-200"
             }`}
           >
             {i + 1}
@@ -140,4 +138,4 @@ const ManageUser = () => {
   );
 };
 
-export default ManageUser;
+export default ManageAdmin;
