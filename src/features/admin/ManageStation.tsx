@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 
@@ -13,8 +20,16 @@ const ManageStation = () => {
 
   useEffect(() => {
     const fetchStations = async () => {
-      const querySnapshot = await getDocs(collection(db, "stations"));
-      const stationList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      // Tri des stations par dateInstallation en ordre décroissant
+      const q = query(
+        collection(db, "stations"),
+        orderBy("dateInstallation", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      const stationList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setStations(stationList);
       setFilteredStations(stationList);
     };
@@ -25,18 +40,21 @@ const ManageStation = () => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearch(value);
-    const filtered = stations.filter((station) =>
-      station.nom.toLowerCase().includes(value) ||
-      station.proprietaire?.toLowerCase().includes(value) ||
-      station.clientId?.toLowerCase().includes(value)
+    const filtered = stations.filter(
+      (station) =>
+        station.nom.toLowerCase().includes(value) ||
+        station.proprietaire?.toLowerCase().includes(value) ||
+        station.clientId?.toLowerCase().includes(value)
     );
     setFilteredStations(filtered);
     setCurrentPage(1);
   };
 
   const handleDelete = async (id: string) => {
-    const confirm = window.confirm("Voulez-vous vraiment supprimer cette station ?");
-    if (!confirm) return;
+    const confirmDelete = window.confirm(
+      "Voulez-vous vraiment supprimer cette station ?"
+    );
+    if (!confirmDelete) return;
 
     await deleteDoc(doc(db, "stations", id));
     setStations(stations.filter((s) => s.id !== id));
@@ -72,6 +90,7 @@ const ManageStation = () => {
         <table className="w-full bg-white rounded-lg shadow overflow-hidden">
           <thead className="bg-purple-100 text-left">
             <tr>
+              <th className="px-4 py-2">N°</th>
               <th className="px-4 py-2">Nom</th>
               <th className="px-4 py-2">Propriétaire</th>
               <th className="px-4 py-2">Client ID</th>
@@ -82,8 +101,9 @@ const ManageStation = () => {
           </thead>
           <tbody>
             {currentStations.length > 0 ? (
-              currentStations.map((station) => (
+              currentStations.map((station, index) => (
                 <tr key={station.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{indexOfFirst + index + 1}</td>
                   <td className="px-4 py-2">{station.nom}</td>
                   <td className="px-4 py-2">{station.proprietaire}</td>
                   <td className="px-4 py-2">{station.clientId}</td>
@@ -91,7 +111,9 @@ const ManageStation = () => {
                   <td className="px-4 py-2 capitalize">{station.etat}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
-                      onClick={() => navigate(`/dash-admin/manage-station/edit/${station.id}`)}
+                      onClick={() =>
+                        navigate(`/dash-admin/manage-station/edit/${station.id}`)
+                      }
                       className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
                     >
                       Éditer
@@ -107,7 +129,7 @@ const ManageStation = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="px-4 py-2 text-center text-gray-500">
+                <td colSpan={7} className="px-4 py-2 text-center text-gray-500">
                   Aucune station trouvée.
                 </td>
               </tr>
