@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../services/Firebase/FirebaseConfig";
 import { useState } from "react";
@@ -8,6 +8,9 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [userSubMenuOpen, setUserSubMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   const handleLogout = async () => {
     try {
@@ -37,7 +40,14 @@ const Sidebar = () => {
       >
         <ul className="space-y-4">
           <li>
-            <a href="/dash-admin" className="hover:text-blue-500">
+            <a
+              href="/dash-admin"
+              className={`hover:text-blue-500 ${
+                isActive("/dash-admin") && location.pathname === "/dash-admin"
+                  ? "text-blue-700 font-semibold"
+                  : ""
+              }`}
+            >
               🏠 Accueil
             </a>
           </li>
@@ -54,12 +64,26 @@ const Sidebar = () => {
             {userSubMenuOpen && (
               <ul className="ml-4 mt-2 space-y-2 text-sm text-gray-600">
                 <li>
-                  <a href="/dash-admin/manage-user/admins" className="hover:text-blue-500">
+                  <a
+                    href="/dash-admin/manage-user/admins"
+                    className={`hover:text-blue-500 ${
+                      isActive("/dash-admin/manage-user/admins")
+                        ? "text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     • Administrateurs
                   </a>
                 </li>
                 <li>
-                  <a href="/dash-admin/manage-user/users" className="hover:text-blue-500">
+                  <a
+                    href="/dash-admin/manage-user/users"
+                    className={`hover:text-blue-500 ${
+                      isActive("/dash-admin/manage-user/users")
+                        ? "text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     • Utilisateurs simples
                   </a>
                 </li>
@@ -68,25 +92,57 @@ const Sidebar = () => {
           </li>
 
           <li>
-            <a href="/dash-admin/manage-client" className="hover:text-blue-500">
+            <a
+              href="/dash-admin/manage-client"
+              className={`hover:text-blue-500 ${
+                isActive("/dash-admin/manage-client")
+                  ? "text-blue-700 font-semibold"
+                  : ""
+              }`}
+            >
               👥 Gestion des clients
             </a>
           </li>
+
           <li>
-            <a href="/dash-admin/manage-station" className="hover:text-blue-500">
+            <a
+              href="/dash-admin/manage-station"
+              className={`hover:text-blue-500 ${
+                isActive("/dash-admin/manage-station")
+                  ? "text-blue-700 font-semibold"
+                  : ""
+              }`}
+            >
               📡 Gestion de stations
             </a>
           </li>
+
           <li>
-            <a href="/dash-admin/stats" className="hover:text-blue-500">
+            <a
+              href="/dash-admin/stats"
+              className={`hover:text-blue-500 ${
+                isActive("/dash-admin/stats")
+                  ? "text-blue-700 font-semibold"
+                  : ""
+              }`}
+            >
               📊 Statistiques
             </a>
           </li>
+
           <li>
-            <a href="/dash-admin/profile" className="hover:text-blue-500">
+            <a
+              href="/dash-admin/profile"
+              className={`hover:text-blue-500 ${
+                isActive("/dash-admin/profile")
+                  ? "text-blue-700 font-semibold"
+                  : ""
+              }`}
+            >
               🙍‍♂️ Profil
             </a>
           </li>
+
           <li>
             <button
               onClick={handleLogout}
