@@ -109,21 +109,25 @@ const ManageStation = () => {
                   <td className="px-4 py-2">{station.clientId}</td>
                   <td className="px-4 py-2">{station.dateInstallation}</td>
                   <td className="px-4 py-2 capitalize">{station.etat}</td>
-                  <td className="px-4 py-2 space-x-2">
-                    <button
-                      onClick={() =>
-                        navigate(`/dash-admin/manage-station/edit/${station.id}`)
-                      }
-                      className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
-                    >
-                      Éditer
-                    </button>
-                    <button
-                      onClick={() => handleDelete(station.id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                    >
-                      Supprimer
-                    </button>
+                  <td className="px-4 py-2 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => navigate(`/dash-admin/manage-station/edit/${station.id}`)}
+                    className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
+                  >
+                    Éditer
+                  </button>
+                  <button
+                    onClick={() => handleDelete(station.id)}
+                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                  >
+                    Supprimer
+                  </button>
+                  <button
+                    onClick={() => navigate(`/dash-admin/station-stats/${station.id}`)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                  >
+                    Statistiques
+                  </button>
                   </td>
                 </tr>
               ))
