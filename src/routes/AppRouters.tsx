@@ -18,6 +18,7 @@ import EditUser from "../features/admin/EditUser";
 import ManageAdmin from "../features/admin/ManageAdmin";
 import AdminLayout from "../components/AdminLayout";
 import StationStats from "../features/dashboard/StationStats";
+import EditAdmin from "../features/admin/EditAdmin";
 
 const AppRouter = () => {
     return (
@@ -58,7 +59,8 @@ const AppRouter = () => {
                     <Route path="manage-station/edit/:stationId" element={<EditStation />} />
                     <Route path="manage-user/users" element={<ManageUser />} />
                     <Route path="manage-user/admins" element={<ManageAdmin />} />
-                    <Route path="manage-user/edit/:userId" element={<EditUser />} />
+                    <Route path="manage-user/users/edit/:userId" element={<EditUser />} />
+                    <Route path="manage-user/admins/edit/:userId" element={<EditAdmin />} />
                     <Route path="station-stats/:stationId" element={<StationStats />} />
                 </Route>
             </Routes>

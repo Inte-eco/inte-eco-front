@@ -95,7 +95,7 @@ const ManageAdmin = () => {
                   <td className="px-4 py-2 capitalize">{admin.type}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
-                      onClick={() => navigate(`/dash-admin/manage-admin/edit/${admin.id}`)}
+                      onClick={() => navigate(`/dash-admin/manage-user/admins/edit/${admin.id}`)}
                       className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
                     >
                       Éditer
