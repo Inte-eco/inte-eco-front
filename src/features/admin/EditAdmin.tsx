@@ -57,54 +57,73 @@ const EditAdmin = () => {
   if (!adminData) return null;
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-4">Modifier l'administrateur</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-1">Nom</label>
-          <input
-            type="text"
-            name="nom"
-            value={adminData.nom || ""}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
+    <div className="flex flex-1 items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
+        <h2 className="text-3xl font-bold text-center text-red-600 mb-6">Modifier l’administrateur</h2>
+        <p className="text-center text-gray-500 mb-4">
+          Tu peux modifier le nom, l'email ou le rôle de l’administrateur.
+        </p>
 
-        <div>
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={adminData.email || ""}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Nom</label>
+            <input
+              type="text"
+              name="nom"
+              value={adminData.nom || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block mb-1">Rôle</label>
-          <select
-            name="role"
-            value={adminData.role || ""}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">-- Choisir un rôle --</option>
-            <option value="admin">Admin</option>
-            <option value="super_admin">Super Admin</option>
-          </select>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={adminData.email || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+              required
+            />
+          </div>
 
-        <div className="flex justify-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
+            <input
+              type="text"
+              name="mot de passe"
+              value={adminData.password || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Rôle</label>
+            <select
+              name="role"
+              value={adminData.role || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+              required
+            >
+              <option value="">-- Choisir un rôle --</option>
+              <option value="admin">Admin</option>
+              <option value="super_admin">Super Admin</option>
+            </select>
+          </div>
+
           <button
             type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            className="w-full bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition"
           >
-            Enregistrer
+            Enregistrer les modifications
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
