@@ -60,7 +60,7 @@ const AppRouter = () => {
                     <Route path="manage-user/users" element={<ManageUser />} />
                     <Route path="manage-user/admins" element={<ManageAdmin />} />
                     <Route path="manage-user/users/edit/:userId" element={<EditUser />} />
-                    <Route path="manage-user/admins/edit/:userId" element={<EditAdmin />} />
+                    <Route path="manage-user/admins/edit/:adminId" element={<EditAdmin />} />
                     <Route path="station-stats/:stationId" element={<StationStats />} />
                 </Route>
             </Routes>

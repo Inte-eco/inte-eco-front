@@ -4,36 +4,36 @@ import { db } from "../../services/Firebase/FirebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const EditAdmin = () => {
-  const { id } = useParams();
+  const { adminId } = useParams();
   const navigate = useNavigate();
   const [adminData, setAdminData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!adminId) return;
 
     const fetchAdmin = async () => {
       try {
-        const docRef = doc(db, "admins", id);
+        const docRef = doc(db, "admins", adminId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           setAdminData(docSnap.data());
         } else {
           alert("Administrateur non trouvé");
-          navigate("/dash-admin/manage-admin/admins");
+          navigate("/dash-admin/manage-user/admins");
         }
       } catch (error) {
         console.error("Erreur lors de la récupération :", error);
         alert("Erreur lors de la récupération des données");
-        navigate("/dash-admin/manage-admin/admins");
+        navigate("/dash-admin/manage-user/admins");
       } finally {
         setLoading(false);
       }
     };
 
     fetchAdmin();
-  }, [id, navigate]);
+  }, [adminId, navigate]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -44,9 +44,9 @@ const EditAdmin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateDoc(doc(db, "admins", id!), adminData);
+      await updateDoc(doc(db, "admins", adminId!), adminData);
       alert("Mise à jour réussie !");
-      navigate("/dash-admin/manage-admin/admins");
+      navigate("/dash-admin/manage-user/admins");
     } catch (error) {
       console.error("Erreur de mise à jour :", error);
       alert("Erreur lors de la mise à jour");
