@@ -39,7 +39,7 @@ const AddAdmin = () => {
       }
 
       alert("Administrateur créé avec succès !");
-      navigate("/dash-admin/manage-user");
+      navigate("/dash-admin/manage-user/admins");
     } catch (error: any) {
       console.error("Erreur :", error);
       if (error.code === "auth/email-already-in-use") {
