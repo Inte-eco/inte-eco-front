@@ -4,53 +4,54 @@ import { db } from "../../services/Firebase/FirebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const EditUser = () => {
-  const { id } = useParams();
+  const { userId } = useParams();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
-
+    if (!userId) return;
+  
     const fetchUser = async () => {
       try {
-        const docRef = doc(db, "users", id);
+        const docRef = doc(db, "users", userId);
         const docSnap = await getDoc(docRef);
-
+  
         if (docSnap.exists()) {
           setUserData(docSnap.data());
         } else {
           alert("Utilisateur non trouvé");
-          navigate("/dash-admin/manage-user");
+          navigate("/dash-admin/manage-user/users");
         }
       } catch (error) {
         console.error("Erreur lors de la récupération :", error);
         alert("Erreur lors de la récupération des données");
-        navigate("/dash-admin/manage-user");
+        navigate("/dash-admin/manage-user/users");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchUser();
-  }, [id, navigate]);
+  }, [userId, navigate]);
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateDoc(doc(db, "users", userId!), userData);
+      alert("Mise à jour réussie !");
+      navigate("/dash-admin/manage-user/users");
+    } catch (error) {
+      console.error("Erreur de mise à jour :", error);
+      alert("Erreur lors de la mise à jour");
+    }
+  };
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await updateDoc(doc(db, "users", id!), userData);
-      alert("Mise à jour réussie !");
-      navigate("/dash-admin/manage-user");
-    } catch (error) {
-      console.error("Erreur de mise à jour :", error);
-      alert("Erreur lors de la mise à jour");
-    }
   };
 
   if (loading) return <div className="p-6">Chargement...</div>;
