@@ -162,14 +162,14 @@ const AddUser = () => {
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Stations gérées</label>
             <div className="border rounded-lg p-2 h-32 overflow-y-auto space-y-1">
-              {stations.map((station: any) => (
-                <div key={station.id} className="flex items-center space-x-2">
+              {stations.map((stationId: string) => (
+                <div key={stationId} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    checked={stationsGerees.includes(station.id)}
-                    onChange={() => toggleStationSelection(station.id)}
+                    checked={stationsGerees.includes(stationId)}
+                    onChange={() => toggleStationSelection(stationId)}
                   />
-                  <label>{station.nom} ({station.id})</label>
+                  <label>{stationId}</label>
                 </div>
               ))}
             </div>
