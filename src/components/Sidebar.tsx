@@ -119,9 +119,9 @@ const Sidebar = () => {
 
           <li>
             <a
-              href="/dash-admin/stats"
+              href="/dash-admin/statistic"
               className={`hover:text-blue-500 ${
-                isActive("/dash-admin/stats")
+                isActive("/dash-admin/statistic")
                   ? "text-blue-700 font-semibold"
                   : ""
               }`}
