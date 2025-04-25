@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ManageAdmin = () => {
   const [admins, setAdmins] = useState<any[]>([]);
@@ -47,6 +49,58 @@ const ManageAdmin = () => {
     setFilteredAdmins(filteredAdmins.filter((a) => a.id !== id));
   };
 
+  const exportToCSV = () => {
+    const headers = ["Nom", "Email", "Rôle", "Origine"];
+    const rows = filteredAdmins.map((admin) => [
+      admin.nom,
+      admin.email,
+      admin.role,
+      admin.type,
+    ]);
+
+    let csvContent = "data:text/csv;charset=utf-8,"
+      + headers.join(",") + "\n"
+      + rows.map((e) => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "liste_administrateurs.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+  
+    doc.text("Liste des Administrateurs", 14, 10);
+    
+    const tableColumn = ["N°", "Nom", "Email", "Rôle", "Origine"];
+    const tableRows: any[] = [];
+  
+    filteredAdmins.forEach((admin, index) => {
+      const adminData = [
+        index + 1,
+        admin.nom,
+        admin.email,
+        admin.role,
+        admin.type,
+      ];
+      tableRows.push(adminData);
+    });
+  
+    // @ts-ignore
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+  
+    doc.save("liste_admins.pdf");
+  };
+  
+
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentAdmins = filteredAdmins.slice(indexOfFirst, indexOfLast);
@@ -56,12 +110,26 @@ const ManageAdmin = () => {
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Gestion des Administrateurs</h2>
-        <button
-          onClick={() => navigate("/dash-admin/add-admin")}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-        >
-          Ajouter un administrateur
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={exportToCSV}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Export CSV
+          </button>
+          <button
+            onClick={exportToPDF}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Export PDF
+          </button>
+          <button
+            onClick={() => navigate("/dash-admin/add-admin")}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Ajouter un administrateur
+          </button>
+        </div>
       </div>
 
       <input
@@ -88,7 +156,7 @@ const ManageAdmin = () => {
             {currentAdmins.length > 0 ? (
               currentAdmins.map((admin, index) => (
                 <tr key={admin.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{index + 1}</td>
+                  <td className="px-4 py-2">{indexOfFirst + index + 1}</td>
                   <td className="px-4 py-2">{admin.nom}</td>
                   <td className="px-4 py-2">{admin.email}</td>
                   <td className="px-4 py-2">{admin.role}</td>
