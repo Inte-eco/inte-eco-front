@@ -3,6 +3,7 @@ import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/fi
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import "jspdf-autotable";
 
 const ManageAdmin = () => {
@@ -72,34 +73,27 @@ const ManageAdmin = () => {
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const pdfDoc = new jsPDF();
   
-    doc.text("Liste des Administrateurs", 14, 10);
-    
+    pdfDoc.text("Liste des Administrateurs", 14, 10);
+  
     const tableColumn = ["N°", "Nom", "Email", "Rôle", "Origine"];
-    const tableRows: any[] = [];
+    const tableRows = filteredAdmins.map((admin, index) => [
+      index + 1,
+      admin.nom,
+      admin.email,
+      admin.role,
+      admin.type,
+    ]);
   
-    filteredAdmins.forEach((admin, index) => {
-      const adminData = [
-        index + 1,
-        admin.nom,
-        admin.email,
-        admin.role,
-        admin.type,
-      ];
-      tableRows.push(adminData);
-    });
-  
-    // @ts-ignore
-    doc.autoTable({
+    autoTable(pdfDoc, {
       head: [tableColumn],
       body: tableRows,
       startY: 20,
     });
   
-    doc.save("liste_admins.pdf");
+    pdfDoc.save("liste_admins.pdf");
   };
-  
 
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
