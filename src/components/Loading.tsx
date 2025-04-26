@@ -2,7 +2,6 @@ import Lottie from "lottie-react";
 import loadingAnimation from "../assets/ic_loading.json";
 
 const Loading = () => {
-
     return (
         <div className="min-h-screen flex flex-col">
     
@@ -12,7 +11,6 @@ const Loading = () => {
                 
         </div>
     )
-  
 };
 
 export default Loading;
