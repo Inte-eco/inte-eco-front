@@ -106,6 +106,12 @@ const ManageAdmin = () => {
         <h2 className="text-2xl font-bold">Gestion des Administrateurs</h2>
         <div className="flex items-center space-x-2">
           <button
+            onClick={() => navigate("/dash-admin/add-admin")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Ajouter un administrateur
+          </button>
+          <button
             onClick={exportToCSV}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
@@ -113,15 +119,9 @@ const ManageAdmin = () => {
           </button>
           <button
             onClick={exportToPDF}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Export PDF
-          </button>
-          <button
-            onClick={() => navigate("/dash-admin/add-admin")}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
-            Ajouter un administrateur
           </button>
         </div>
       </div>

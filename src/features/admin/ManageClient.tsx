@@ -9,6 +9,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const ManageClient = () => {
   const [clients, setClients] = useState<any[]>([]);
@@ -53,6 +55,46 @@ const ManageClient = () => {
     setFilteredClients(filteredClients.filter((client) => client.id !== id));
   };
 
+  const exportCSV = () => {
+    const headers = ["Nom", "Email", "Téléphone", "Adresse"];
+    const rows = filteredClients.map(c =>
+      [c.nom, c.email, c.telephone, c.adresse].join(",")
+    );
+    const csvContent = [headers.join(","), ...rows].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "clients.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportPDF = () => {
+    const pdfDoc = new jsPDF();
+  
+    pdfDoc.text("Liste des Clients", 14, 10);
+  
+    const tableColumn = ["N°", "Nom", "Email", "Téléphone", "Adresse"];
+    const tableRows = filteredClients.map((client, index) => [
+      index + 1,
+      client.nom,
+      client.email,
+      client.telephone,
+      client.adresse,
+    ]);
+  
+    autoTable(pdfDoc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+  
+    pdfDoc.save("liste_clients.pdf");
+  };
+
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentClients = filteredClients.slice(indexOfFirst, indexOfLast);
@@ -60,14 +102,28 @@ const ManageClient = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold">Gestion des Clients</h2>
-        <button
-          onClick={() => navigate("/dash-admin/add-client")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Ajouter un nouveau client
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => navigate("/dash-admin/add-client")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Ajouter un nouveau client
+          </button>
+          <button
+            onClick={exportCSV}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Exporter CSV
+          </button>
+          <button
+            onClick={exportPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Exporter PDF
+          </button>
+        </div>
       </div>
 
       <input
@@ -149,4 +205,3 @@ const ManageClient = () => {
 };
 
 export default ManageClient;
-
