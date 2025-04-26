@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const ManageUser = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -52,16 +54,78 @@ const ManageUser = () => {
   const currentUsers = filteredUsers.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
+  // Exporter en CSV
+  const exportToCSV = () => {
+    const headers = ["N°", "Nom", "Email", "Rôle", "Client", "Origine"];
+    const rows = currentUsers.map((user, index) => [
+      index + 1,
+      user.nom,
+      user.email,
+      user.role,
+      user.clientId || "-",
+      user.type,
+    ]);
+    
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "utilisateurs.csv";
+    link.click();
+  };
+
+  // Exporter en PDF
+  const exportToPDF = () => {
+    const docPdf = new jsPDF();
+    docPdf.text("Liste des Utilisateurs", 14, 10);
+
+    const tableColumn = ["N°", "Nom", "Email", "Rôle", "Client", "Origine"];
+    const tableRows = currentUsers.map((user, index) => [
+      index + 1,
+      user.nom,
+      user.email,
+      user.role,
+      user.clientId || "-",
+      user.type,
+    ]);
+
+    autoTable(docPdf, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    docPdf.save("utilisateurs.pdf");
+  };
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Gestion des Utilisateurs</h2>
-        <button
-          onClick={() => navigate("/dash-admin/add-user")}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Ajouter un utilisateur
-        </button>
+        <div className="flex space-x-4">
+          <button
+            onClick={() => navigate("/dash-admin/add-user")}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Ajouter un utilisateur
+          </button>
+          <button
+            onClick={exportToCSV}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Exporter CSV
+          </button>
+          <button
+            onClick={exportToPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Exporter PDF
+          </button>
+        </div>
       </div>
 
       <input
@@ -141,3 +205,4 @@ const ManageUser = () => {
 };
 
 export default ManageUser;
+
