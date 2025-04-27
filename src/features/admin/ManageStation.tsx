@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-
 const ManageStation = () => {
   const [stations, setStations] = useState<any[]>([]);
   const [filteredStations, setFilteredStations] = useState<any[]>([]);

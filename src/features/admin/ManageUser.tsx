@@ -78,7 +78,6 @@ const ManageUser = () => {
     link.click();
   };
 
-  // Exporter en PDF
   const exportToPDF = () => {
     const docPdf = new jsPDF();
     docPdf.text("Liste des Utilisateurs", 14, 10);
