@@ -6,25 +6,75 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
-import { Line } from "react-chartjs-2";
+
 import {
   Chart as ChartJS,
   LineElement,
+  BarElement,
   CategoryScale,
   LinearScale,
   PointElement,
+  ArcElement,
+  RadialLinearScale,
   Tooltip,
   Legend,
 } from "chart.js";
 
+import { Line, Bar, Pie, Bubble, Radar } from "react-chartjs-2";
+
 ChartJS.register(
   LineElement,
+  BarElement,
   CategoryScale,
   LinearScale,
   PointElement,
+  ArcElement,
+  RadialLinearScale,
   Tooltip,
   Legend
 );
+
+type ChartType = "line" | "bar" | "pie" | "bubble" | "radar";
+
+interface ChartConfig {
+  title: string;
+  type: ChartType;
+  key: string; // la clé du champ dans les mesures Firebase (ex: 'temperature')
+  color: string;
+}
+
+const chartConfigs: ChartConfig[] = [
+  {
+    title: "Température (°C)",
+    type: "line",
+    key: "temperature",
+    color: "rgba(255, 99, 132, 1)",
+  },
+  {
+    title: "Humidité (%)",
+    type: "pie",
+    key: "humidite",
+    color: "rgba(54, 162, 235, 1)",
+  },
+  {
+    title: "CO (PPM)",
+    type: "bar",
+    key: "co",
+    color: "rgba(153, 102, 255, 1)",
+  },
+  {
+    title: "CO₂ (PPM)",
+    type: "line",
+    key: "co2",
+    color: "rgba(255, 206, 86, 1)",
+  },
+  {
+    title: "H₂S (PPM)",
+    type: "bubble",
+    key: "h2s",
+    color: "rgba(75, 192, 192, 1)",
+  },
+];
 
 const Statistic = () => {
   const [stations, setStations] = useState<any[]>([]);
@@ -48,7 +98,7 @@ const Statistic = () => {
 
   const fetchMesures = async (stationId: string) => {
     const mesuresRef = collection(db, "stations", stationId, "mesures");
-    const q = query(mesuresRef, orderBy("date", "asc"));
+    const q = query(mesuresRef, orderBy("timestamp", "asc"));
     const snapshot = await getDocs(q);
     const data = snapshot.docs.map((doc) => doc.data());
     setMesures(data);
@@ -60,38 +110,42 @@ const Statistic = () => {
     fetchMesures(id);
   };
 
-  const chartData = {
-    labels: mesures.map((m) => new Date(m.date?.seconds * 1000).toLocaleString()),
-    datasets: [
-      {
-        label: "Température (°C)",
-        data: mesures.map((m) => m.temperature),
-        fill: false,
-        borderColor: "#8b5cf6",
-        tension: 0.4,
-      },
-      {
-        label: "Humidité (%)",
-        data: mesures.map((m) => m.humidite),
-        fill: false,
-        borderColor: "#34d399",
-        tension: 0.4,
-      },
-    ],
-  };
+  const labels = mesures.map((m) =>
+    new Date(m.timestamp).toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  );
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-    },
-    scales: {
-      x: {
-        ticks: { maxRotation: 45, minRotation: 45 },
-      },
-    },
+  const renderChart = (config: ChartConfig, index: number) => {
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: config.title,
+          data: mesures.map((m) => m[config.key]),
+          backgroundColor: config.color,
+          borderColor: config.color,
+          fill: config.type === "line" || config.type === "radar" ? false : true,
+          tension: 0.4,
+        },
+      ],
+    };
+
+    switch (config.type) {
+      case "line":
+        return <Line key={index} data={data} />;
+      case "bar":
+        return <Bar key={index} data={data} />;
+      case "pie":
+        return <Pie key={index} data={data} />;
+      case "bubble":
+        return <Bubble key={index} data={data} />;
+      case "radar":
+        return <Radar key={index} data={data} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -112,14 +166,22 @@ const Statistic = () => {
       </select>
 
       {selectedStationId && mesures.length > 0 ? (
-        <div className="bg-white rounded p-4 shadow">
-          <Line data={chartData} options={chartOptions} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {chartConfigs.map((config, index) => (
+            <div key={index} className="bg-white p-4 rounded-lg shadow">
+              <h2 className="text-lg font-semibold mb-2">{config.title}</h2>
+              {renderChart(config, index)}
+            </div>
+          ))}
         </div>
       ) : selectedStationId && mesures.length === 0 ? (
-        <p className="text-gray-500">Aucune mesure disponible pour cette station.</p>
+        <p className="text-gray-500">
+          Aucune mesure disponible pour cette station.
+        </p>
       ) : null}
     </div>
   );
 };
 
 export default Statistic;
+
