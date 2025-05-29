@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../../components/NavBar';
-import Sidebar from '../../components/Sidebar';
+import ClientSidebar from './ClientSidebar';
 const ClientLayout = () => (
   <div className="flex flex-col h-screen">
     <Navbar />
     <div className="flex flex-1">
-      <Sidebar />
+      <ClientSidebar />
       <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
         <Outlet />
       </main>
