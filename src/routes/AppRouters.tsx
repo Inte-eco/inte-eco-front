@@ -20,6 +20,7 @@ import AdminLayout from "../components/AdminLayout";
 import StationStats from "../features/dashboard/StationStats";
 import EditAdmin from "../features/admin/EditAdmin";
 import Statistic from "../features/admin/Statistic";
+import ClientLayout from "../features/client/ClientLayout";
 
 const AppRouter = () => {
     return (
@@ -34,10 +35,12 @@ const AppRouter = () => {
                     path="/dashboard"
                     element={
                         <PrivateRoutes>
-                            <ClientDashboard />
+                            <ClientLayout />
                         </PrivateRoutes>
                     }
-                />
+                >
+                    <Route index element={<ClientDashboard />} />
+                </Route>
 
                 {/* Admin routes with layout & protection */}
                 <Route
