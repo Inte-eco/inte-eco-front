@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.0.17",
     "chart.js": "^4.4.8",
+    "chartjs-plugin-annotation": "^3.1.0",
     "firebase": "^11.5.0",
     "json2csv": "^6.0.0-alpha.2",
     "jspdf": "^3.0.1",
