@@ -189,7 +189,7 @@
 import { useEffect, useState } from "react";
 import {
   collection,
-  getDocs,
+  onSnapshot,
   query,
   orderBy,
 } from "firebase/firestore";
@@ -225,32 +225,39 @@ const Statistic = () => {
   const [mesures, setMesures] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchStations = async () => {
-      const querySnapshot = await getDocs(
-        query(collection(db, "stations"), orderBy("nom"))
-      );
+    const q = query(collection(db, "stations"), orderBy("nom"));
+  
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const stationList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
       setStations(stationList);
-    };
+    });
+  
+    return () => unsubscribe();
+  }, []);  
 
-    fetchStations();
-  }, []);
 
-  const fetchMesures = async (stationId: string) => {
-    const mesuresRef = collection(db, "stations", stationId, "mesures");
+  useEffect(() => {
+    if (!selectedStationId) return;
+  
+    const mesuresRef = collection(db, "stations", selectedStationId, "mesures");
     const q = query(mesuresRef, orderBy("timestamp", "asc"));
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map((doc) => doc.data());
-    setMesures(data);
-  };
+  
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => doc.data());
+      setMesures(data);
+    });
+  
+    // Nettoyer l'écouteur si la station change ou le composant est démonté
+    return () => unsubscribe();
+  }, [selectedStationId]);
+  
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
     setSelectedStationId(id);
-    fetchMesures(id);
   };
 
   const labels = mesures.map((m) =>
@@ -265,7 +272,7 @@ const Statistic = () => {
     datasets: [
       {
         label: "CO₂ (PPM)",
-        data: mesures.map((m) => m["co2"]),
+        data: mesures.map((m) => m.donnees?.co2 ?? null),
         backgroundColor: "rgba(255, 206, 86, 1)",
         borderColor: "rgba(255, 206, 86, 1)",
         fill: false,
@@ -273,8 +280,6 @@ const Statistic = () => {
       },
     ],
   };
-  
-  
 
 const options: ChartOptions<"line"> = {
   responsive: true,
@@ -349,8 +354,6 @@ const options: ChartOptions<"line"> = {
     },
   },
 };
-
-  
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
