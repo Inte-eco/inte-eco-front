@@ -96,7 +96,8 @@ const AdminDashboard = () => {
           return (
             <div
               key={station.id}
-              className={`p-4 rounded shadow text-white ${status.color}`}
+              className={`p-4 rounded shadow text-white cursor-pointer hover:opacity-90 ${status.color}`}
+              onClick={() => navigate(`/dash-admin/statistic/${station.id}`)}
             >
               <h2 className="text-lg font-semibold">{station.nom}</h2>
               <p className="text-sm italic">{station.proprietaire}</p>

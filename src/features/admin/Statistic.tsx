@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   collection,
   onSnapshot,
@@ -33,7 +34,8 @@ ChartJS.register(
 
 const Statistic = () => {
   const [stations, setStations] = useState<any[]>([]);
-  const [selectedStationId, setSelectedStationId] = useState("");
+  const { stationId } = useParams();
+  const [selectedStationId, setSelectedStationId] = useState(stationId ?? "");
   const [mesures, setMesures] = useState<any[]>([]);
 
   useEffect(() => {
@@ -245,18 +247,21 @@ const barOptions: ChartOptions<'bar'> = {
     <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-4">Statistiques des Stations</h2>
 
-      <select
-        value={selectedStationId}
-        onChange={handleSelectChange}
-        className="mb-6 p-2 border rounded w-full"
-      >
-        <option value="">-- Sélectionnez une station --</option>
-        {stations.map((station) => (
-          <option key={station.id} value={station.id}>
-            {station.nom} ({station.proprietaire})
-          </option>
-        ))}
-      </select>
+      {!stationId && (
+  <select
+    value={selectedStationId}
+    onChange={handleSelectChange}
+    className="mb-6 p-2 border rounded w-full"
+  >
+    <option value="">-- Sélectionnez une station --</option>
+    {stations.map((station) => (
+      <option key={station.id} value={station.id}>
+        {station.nom} ({station.proprietaire})
+      </option>
+    ))}
+  </select>
+)}
+
 
       {selectedStationId && mesures.length > 0 ? (
         <>

@@ -67,6 +67,7 @@ const AppRouter = () => {
                     <Route path="manage-user/admins/edit/:adminId" element={<EditAdmin />} />
                     <Route path="station-stats/:stationId" element={<StationStats />} />
                     <Route path="statistic/" element={<Statistic />} />
+                    <Route path="statistic/:stationId" element={<Statistic />} />
                 </Route>
             </Routes>
         </Router>
