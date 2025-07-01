@@ -20,6 +20,8 @@ import AdminLayout from "../components/AdminLayout";
 import EditAdmin from "../features/admin/EditAdmin";
 import Statistic from "../features/admin/Statistic";
 import ClientLayout from "../features/client/ClientLayout";
+import ClientProfile from "../features/client/CLientProfile";
+import ShowUsers from "../features/client/ShowUsers";
 
 const AppRouter = () => {
     return (
@@ -39,8 +41,8 @@ const AppRouter = () => {
                     }
                 >
                     <Route index element={<ClientDashboard />} />
-                    <Route path="show-users" element={<AddClient />} />
-                    <Route path="user-profil" element={<AddClient />} />
+                    <Route path="show-users" element={<ShowUsers />} />
+                    <Route path="user-profile" element={<ClientProfile />} />
                 </Route>
 
                 {/* Admin routes with layout & protection */}

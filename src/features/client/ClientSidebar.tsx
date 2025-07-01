@@ -10,7 +10,7 @@ const ClientSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      sessionStorage.removeItem("adminUid");
+      sessionStorage.removeItem("clientUid");
       await signOut(auth);
       navigate("/");
     } catch (error) {
@@ -28,9 +28,9 @@ const ClientSidebar = () => {
         <ul className="space-y-4">
           <li>
             <a
-              href="/dash-admin"
+              href="/dashboard"
               className={`hover:text-blue-500 ${
-                isActive("/dash-admin") && location.pathname === "/dash-admin"
+                isActive("/dashboard") && location.pathname === "/dashboard"
                   ? "text-blue-700 font-semibold"
                   : ""
               }`}
@@ -41,9 +41,9 @@ const ClientSidebar = () => {
 
           <li>
             <a
-              href="/dash-admin/statistic"
+              href="/dashboard/show-users"
               className={`hover:text-blue-500 ${
-                isActive("/dash-admin/statistic")
+                isActive("/dashboard/show-users")
                   ? "text-blue-700 font-semibold"
                   : ""
               }`}
@@ -54,9 +54,9 @@ const ClientSidebar = () => {
 
           <li>
             <a
-              href="/dash-admin/profile"
+              href="/dashboard/user-profile"
               className={`hover:text-blue-500 ${
-                isActive("/dash-admin/profile")
+                isActive("/dashboard/user-profile")
                   ? "text-blue-700 font-semibold"
                   : ""
               }`}
