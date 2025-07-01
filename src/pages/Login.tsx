@@ -61,9 +61,11 @@ const Login = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-extrabold text-center text-blue-600 mb-6">
-          Connexion
-        </h2>
+        
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img src="/inte5.png" alt="Logo Inteco" className="h-28 w-auto" />
+        </div>
 
         {error && (
           <p className="text-red-500 text-sm text-center mb-4">{error}</p>
@@ -74,7 +76,7 @@ const Login = () => {
             <label className="block text-gray-700 text-sm mb-1">Email</label>
             <input
               type="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
               placeholder="Adresse email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -86,7 +88,7 @@ const Login = () => {
             <label className="block text-gray-700 text-sm mb-1">Mot de passe</label>
             <input
               type="password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
               placeholder="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -96,7 +98,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            className="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
           >
             Se connecter
           </button>

@@ -38,7 +38,7 @@ const Navbar = () => {
       </button>
 
       {/* Logo */}
-      <h1 className="text-xl font-bold text-blue-600">Inteco</h1>
+      <img src="/inte5.png" alt="Logo Inteco" className="h-12 w-auto" />
 
       {/* Champ de recherche */}
       <form onSubmit={handleSearch} className="flex items-center bg-gray-100 rounded px-2 py-1 text-black">
