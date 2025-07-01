@@ -3,7 +3,7 @@ import {
   collection,
   getDocs,
   query,
-  orderBy,
+//   orderBy,
   where,
 } from "firebase/firestore";
 import { db } from "../../services/Firebase/FirebaseConfig";
@@ -26,7 +26,7 @@ const ShowUsers = () => {
       const q = query(
         collection(db, "users"),
         where("clientId", "==", clientUid),
-        orderBy("dateCreation", "desc")
+        // orderBy("dateCreation", "desc")
       );
       const querySnapshot = await getDocs(q);
 
@@ -136,6 +136,8 @@ const ShowUsers = () => {
               <th className="px-4 py-2">Nom</th>
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Rôle</th>
+              <th className="px-4 py-2">Client</th>
+              <th className="px-4 py-2">Station</th>
             </tr>
           </thead>
           <tbody>
@@ -146,6 +148,8 @@ const ShowUsers = () => {
                   <td className="px-4 py-2">{user.nom}</td>
                   <td className="px-4 py-2">{user.email}</td>
                   <td className="px-4 py-2">{user.role}</td>
+                  <td className="px-4 py-2">{user.clientId || "-"}</td>
+                  <td className="px-4 py-2">{user.stationsGerees}</td>
                 </tr>
               ))
             ) : (

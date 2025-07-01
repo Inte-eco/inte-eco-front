@@ -63,7 +63,7 @@ const ManageUser = () => {
       user.email,
       user.role,
       user.clientId || "-",
-      user.type,
+      user.stationsGerees,
     ]);
     
     const csvContent = [
@@ -89,7 +89,7 @@ const ManageUser = () => {
       user.email,
       user.role,
       user.clientId || "-",
-      user.type,
+      user.stationsGerees,
     ]);
 
     autoTable(docPdf, {
@@ -145,7 +145,7 @@ const ManageUser = () => {
               <th className="px-4 py-2">Rôle</th>
               <th className="px-4 py-2">Client</th>
               <th className="px-4 py-2">Origine</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="px-4 py-2">Station</th>
             </tr>
           </thead>
           <tbody>
@@ -157,7 +157,7 @@ const ManageUser = () => {
                   <td className="px-4 py-2">{user.email}</td>
                   <td className="px-4 py-2">{user.role}</td>
                   <td className="px-4 py-2">{user.clientId || "-"}</td>
-                  <td className="px-4 py-2 capitalize">{user.type}</td>
+                  <td className="px-4 py-2 capitalize">{user.stationsGerees}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button
                       onClick={() => navigate(`/dash-admin/manage-user/users/edit/${user.id}`)}

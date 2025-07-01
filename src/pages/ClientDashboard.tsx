@@ -108,14 +108,15 @@ const ClientDashboard = () => {
   const [stations, setStations] = useState<any[]>([]);
   const [mesuresByStation, setMesuresByStation] = useState<Record<string, any[]>>({});
 
+  console.log(clientUid)
+
   // Charger les stations du client
   useEffect(() => {
     if (!clientUid) return;
 
     const q = query(
       collection(db, "stations"),
-      where("clientId", "==", clientUid),
-      orderBy("nom")
+      where("clientId", "==", clientUid)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
