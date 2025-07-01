@@ -1,117 +1,111 @@
-import ChartRealtime from "../components/ChartRealtime";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  limit,
+} from "firebase/firestore";
+import { db } from "../services/Firebase/FirebaseConfig";
 
-const sendNotification = (message: string) => {
-  console.log("📧 Notification envoyée :", message);
+const sendNotification = (stationName: string, value: number) => {
+  console.log(`📧 Notification: Station ${stationName} a un CO₂ élevé: ${value} ppm`);
 };
-
-const chartConfigs = [
-  {
-    title: "CO₂ (PPM)",
-    type: "line",
-    data: [400, 420, 410, 430, 1215],
-    color: "rgba(255, 206, 86, 1)",
-  },
-  {
-    title: "H₂S (PPM)",
-    type: "bubble",
-    data: [5, 6, 5.5, 6.2, 5.8],
-    color: "rgba(75, 192, 192, 1)",
-  },
-  {
-    title: "Température (°C)",
-    type: "radar",
-    data: [22, 24, 23, 25, 26],
-    color: "rgba(255, 99, 132, 1)",
-  },
-  {
-    title: "Humidité (%)",
-    type: "pie",
-    data: [55, 60, 58, 62, 59],
-    color: "rgba(54, 162, 235, 1)",
-  },
-  {
-    title: "CO (PPM)",
-    type: "bar",
-    data: [9, 10, 9.5, 10.2, 9.8],
-    color: "rgba(153, 102, 255, 1)",
-  },
-];
 
 const getCO2Status = (value: number) => {
   if (value <= 400) return { color: "bg-green-500", message: "Excellent" };
   if (value <= 600) return { color: "bg-green-400", message: "Bon" };
   if (value <= 1200) return { color: "bg-yellow-400", message: "Moyen" };
-  if (value <= 2000) {
-    sendNotification("CO₂ atteint un niveau Mauvais.");
-    return { color: "bg-red-400", message: "Mauvais" };
-  }
-  sendNotification("CO₂ atteint un niveau Critique.");
+  if (value <= 2000) return { color: "bg-red-400", message: "Mauvais" };
   return { color: "bg-red-600", message: "Critique" };
 };
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [stations, setStations] = useState<any[]>([]);
+  const [mesuresByStation, setMesuresByStation] = useState<Record<string, any>>({});
+
+  // Récupérer les stations
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(collection(db, "stations"), orderBy("nom")),
+      (snapshot) => {
+        const list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setStations(list);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  // Écoute temps réel des dernières mesures
+  useEffect(() => {
+    const unsubscribes = stations.map((station) => {
+      const q = query(
+        collection(db, "stations", station.id, "mesures"),
+        orderBy("timestamp", "desc"),
+        limit(1)
+      );
+
+      return onSnapshot(q, (snapshot) => {
+        const lastMesure = snapshot.docs[0]?.data();
+        if (lastMesure) {
+          setMesuresByStation((prev) => {
+            const current = prev[station.id];
+            const newCO2 = lastMesure.donnees?.co2;
+
+            if (
+              current?.donnees?.co2 !== newCO2 &&
+              newCO2 >= 1200 // Mauvais ou pire
+            ) {
+              sendNotification(station.nom, newCO2);
+            }
+
+            return {
+              ...prev,
+              [station.id]: lastMesure,
+            };
+          });
+        }
+      });
+    });
+
+    return () => unsubscribes.forEach((u) => u());
+  }, [stations]);
 
   return (
     <div className="flex-1 p-6 bg-gray-100 overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Tableau de bord Admin</h1>
 
       <div className="flex flex-wrap gap-4 mb-6">
-        <button
-          onClick={() => navigate("add-client")}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          🏢 Ajouter un client
-        </button>
-        <button
-          onClick={() => navigate("add-user")}
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          👤 Ajouter un utilisateur
-        </button>
-        <button
-          onClick={() => navigate("add-station")}
-          className="bg-purple-500 text-white px-4 py-2 rounded"
-        >
-          📡 Ajouter une station
-        </button>
-        <button
-          onClick={() => navigate("add-admin")}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          🛡️ Ajouter un admin
-        </button>
+        <button onClick={() => navigate("add-client")} className="bg-blue-500 text-white px-4 py-2 rounded">🏢 Ajouter un client</button>
+        <button onClick={() => navigate("add-user")} className="bg-green-500 text-white px-4 py-2 rounded">👤 Ajouter un utilisateur</button>
+        <button onClick={() => navigate("add-station")} className="bg-purple-500 text-white px-4 py-2 rounded">📡 Ajouter une station</button>
+        <button onClick={() => navigate("add-admin")} className="bg-red-500 text-white px-4 py-2 rounded">🛡️ Ajouter un admin</button>
       </div>
 
-      {/* Cartes indicateurs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {chartConfigs.map((config) => {
-          const latestValue = config.data[config.data.length - 1];
-
-          let status = {
-            color: "bg-gray-300",
-            message: "N/A",
-          };
-
-          if (config.title === "CO₂ (PPM)") {
-            status = getCO2Status(latestValue);
-          }
+        {stations.map((station) => {
+          const mesure = mesuresByStation[station.id];
+          const co2 = mesure?.donnees?.co2 ?? "N/A";
+          const status = typeof co2 === "number" ? getCO2Status(co2) : { color: "bg-gray-300", message: "N/A" };
 
           return (
             <div
-              key={config.title}
+              key={station.id}
               className={`p-4 rounded shadow text-white ${status.color}`}
             >
-              <h2 className="text-lg font-semibold">{config.title}</h2>
-              <p className="text-2xl">{latestValue}</p>
+              <h2 className="text-lg font-semibold">{station.nom}</h2>
+              <p className="text-sm italic">{station.proprietaire}</p>
+              <p className="text-2xl mt-2">CO₂ : {co2}</p>
               <p className="italic">{status.message}</p>
             </div>
           );
         })}
       </div>
-
-      <ChartRealtime />
     </div>
   );
 };
