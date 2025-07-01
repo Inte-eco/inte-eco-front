@@ -31,6 +31,7 @@ const Login = () => {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           role = userDocSnap.data().role;
+          sessionStorage.setItem("userUid", uid);
         } else {
           const adminDocRef = doc(db, "admins", uid);
           const adminDocSnap = await getDoc(adminDocRef);

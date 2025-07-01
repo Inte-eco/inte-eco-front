@@ -189,7 +189,7 @@ const ManageStation = () => {
                     Supprimer
                   </button>
                   <button
-                    onClick={() => navigate(`/dash-admin/station-stats/${station.id}`)}
+                    onClick={() => navigate(`/dash-admin/statistic/${station.id}`)}
                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                   >
                     Statistiques

@@ -17,7 +17,6 @@ import ManageUser from "../features/admin/ManageUser";
 import EditUser from "../features/admin/EditUser";
 import ManageAdmin from "../features/admin/ManageAdmin";
 import AdminLayout from "../components/AdminLayout";
-import StationStats from "../features/dashboard/StationStats";
 import EditAdmin from "../features/admin/EditAdmin";
 import Statistic from "../features/admin/Statistic";
 import ClientLayout from "../features/client/ClientLayout";
@@ -40,6 +39,8 @@ const AppRouter = () => {
                     }
                 >
                     <Route index element={<ClientDashboard />} />
+                    <Route path="show-users" element={<AddClient />} />
+                    <Route path="user-profil" element={<AddClient />} />
                 </Route>
 
                 {/* Admin routes with layout & protection */}
@@ -65,7 +66,6 @@ const AppRouter = () => {
                     <Route path="manage-user/admins" element={<ManageAdmin />} />
                     <Route path="manage-user/users/edit/:userId" element={<EditUser />} />
                     <Route path="manage-user/admins/edit/:adminId" element={<EditAdmin />} />
-                    <Route path="station-stats/:stationId" element={<StationStats />} />
                     <Route path="statistic/" element={<Statistic />} />
                     <Route path="statistic/:stationId" element={<Statistic />} />
                 </Route>
