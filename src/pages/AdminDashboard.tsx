@@ -91,6 +91,7 @@ const AdminDashboard = () => {
         {stations.map((station) => {
           const mesure = mesuresByStation[station.id];
           const co2 = mesure?.donnees?.co2 ?? "N/A";
+          const humidity = mesure?.donnees?.humidity ?? "N/A";
           const status = typeof co2 === "number" ? getCO2Status(co2) : { color: "bg-gray-300", message: "N/A" };
 
           return (
@@ -102,6 +103,7 @@ const AdminDashboard = () => {
               <h2 className="text-lg font-semibold">{station.nom}</h2>
               <p className="text-sm italic">{station.proprietaire}</p>
               <p className="text-2xl mt-2">CO₂ : {co2}</p>
+              <p className="text-2xl mt-2">humidity : {humidity}</p>
               <p className="italic">{status.message}</p>
             </div>
           );

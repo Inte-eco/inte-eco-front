@@ -21,6 +21,8 @@ import {
 import { Line, Bar, Pie } from "react-chartjs-2";
 import annotationPlugin from "chartjs-plugin-annotation";
 import type { ChartOptions } from "chart.js";
+import { SafeChart } from "../../components/SafeChart"; // ajuste le chemin si nécessaire
+
 
 ChartJS.register(
   LineElement,
@@ -268,17 +270,21 @@ const barOptions: ChartOptions<'bar'> = {
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-2">CO₂ (PPM) - Ligne</h2>
             <Line data={data} options={options} />
+            {/* <SafeChart type="line" data={data} options={options} /> */}
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="bg-white p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold mb-2">Bar Chart</h2>
-              <Bar data={data} options={barOptions} />
+              {/* <Bar data={data} options={barOptions} /> */}
+              {/* <SafeChart type="bar" data={data} options={barOptions} /> */}
+
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold mb-2">Pie Chart</h2>
-              <Pie
+              {/* <Pie
                 data={{
                   labels,
                   datasets: [
@@ -302,7 +308,33 @@ const barOptions: ChartOptions<'bar'> = {
                     },
                   },
                 }}
-              />
+              /> */}
+              {/* <SafeChart
+                type="pie"
+                data={{
+                  labels,
+                  datasets: [
+                    {
+                      label: "CO₂ (PPM)",
+                      data: mesures.map((m) => m.donnees?.co2 ?? 0),
+                      backgroundColor: mesures.map((m) => {
+                        const co2 = m.donnees?.co2 ?? 0;
+                        if (co2 <= 400) return "green";
+                        if (co2 <= 600) return "#22c55e";
+                        if (co2 <= 1200) return "#facc15";
+                        return "#f87171";
+                      }),
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                    },
+                  },
+                }}
+              /> */}
             </div>
           </div>
         </>
