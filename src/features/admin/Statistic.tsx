@@ -21,7 +21,7 @@ import {
 import { Line, Bar, Pie } from "react-chartjs-2";
 import annotationPlugin from "chartjs-plugin-annotation";
 import type { ChartOptions } from "chart.js";
-import { SafeChart } from "../../components/SafeChart"; // ajuste le chemin si nécessaire
+// import { SafeChart } from "../../components/SafeChart"; 
 
 
 ChartJS.register(
@@ -277,14 +277,14 @@ const barOptions: ChartOptions<'bar'> = {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="bg-white p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold mb-2">Bar Chart</h2>
-              {/* <Bar data={data} options={barOptions} /> */}
+              <Bar data={data} options={barOptions} />
               {/* <SafeChart type="bar" data={data} options={barOptions} /> */}
 
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold mb-2">Pie Chart</h2>
-              {/* <Pie
+              <Pie
                 data={{
                   labels,
                   datasets: [
@@ -308,7 +308,7 @@ const barOptions: ChartOptions<'bar'> = {
                     },
                   },
                 }}
-              /> */}
+              />
               {/* <SafeChart
                 type="pie"
                 data={{
