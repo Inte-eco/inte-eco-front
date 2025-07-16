@@ -4,12 +4,12 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: env.VITE_API_KEY,
-  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: env.VITE_PROJECT_ID,
-  storageBucket: env.VITE_STORAGE_BUCKET,
-  messagingSenderId: env.VITE_MESSAGING_SENDER_ID,
-  appId: env.VITE_APP_ID,
+  apiKey: "AIzaSyDN1oovfjfTQaGu7OczF8X2lBBoVu4axJc",
+  authDomain: "inte-eco-cd.firebaseapp.com",
+  projectId: "inte-eco-cd",
+  storageBucket: "inte-eco-cd.firebasestorage.app",
+  messagingSenderId: "1059137775482",
+  appId: "1:1059137775482:web:350fd925572439e85158c3",
   // measurementId: import.meta.env.VITE_MEASUREMENT_ID
 };
 
