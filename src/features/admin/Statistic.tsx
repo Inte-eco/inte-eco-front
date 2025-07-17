@@ -19,7 +19,8 @@ import {
   Legend,
 } from "chart.js";
 
-import { Line, Bar, Pie } from "react-chartjs-2";
+// import { Line, Bar, Pie } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 import annotationPlugin from "chartjs-plugin-annotation";
 import type { ChartOptions as ChartJSOptions } from "chart.js";
 
