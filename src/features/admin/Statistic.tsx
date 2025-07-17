@@ -20,7 +20,7 @@ import {
 
 import { Line, Bar, Pie } from "react-chartjs-2";
 import annotationPlugin from "chartjs-plugin-annotation";
-import type { ChartOptions } from "chart.js";
+import type { ChartOptions as ChartJSOptions } from "chart.js";
 // import { SafeChart } from "../../components/SafeChart"; 
 
 
@@ -97,7 +97,7 @@ const Statistic = () => {
     ],
   };
 
-const options: ChartOptions<"line"> = {
+const options: ChartJSOptions<"line"> = {
   responsive: true,
   plugins: {
     legend: {
@@ -171,7 +171,7 @@ const options: ChartOptions<"line"> = {
   },
 };
 
-const barOptions: ChartOptions<'bar'> = {
+const barOptions: ChartJSOptions<'bar'> = {
   responsive: true,
   plugins: {
     legend: { display: false },
@@ -270,16 +270,12 @@ const barOptions: ChartOptions<'bar'> = {
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-2">CO₂ (PPM) - Ligne</h2>
             <Line data={data} options={options} />
-            {/* <SafeChart type="line" data={data} options={options} /> */}
-
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="bg-white p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold mb-2">Bar Chart</h2>
               <Bar data={data} options={barOptions} />
-              {/* <SafeChart type="bar" data={data} options={barOptions} /> */}
-
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow">
@@ -309,32 +305,6 @@ const barOptions: ChartOptions<'bar'> = {
                   },
                 }}
               />
-              {/* <SafeChart
-                type="pie"
-                data={{
-                  labels,
-                  datasets: [
-                    {
-                      label: "CO₂ (PPM)",
-                      data: mesures.map((m) => m.donnees?.co2 ?? 0),
-                      backgroundColor: mesures.map((m) => {
-                        const co2 = m.donnees?.co2 ?? 0;
-                        if (co2 <= 400) return "green";
-                        if (co2 <= 600) return "#22c55e";
-                        if (co2 <= 1200) return "#facc15";
-                        return "#f87171";
-                      }),
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: {
-                      position: "bottom",
-                    },
-                  },
-                }}
-              /> */}
             </div>
           </div>
         </>
