@@ -26,7 +26,7 @@ const Sidebar = () => {
     <div className="flex">
       {/* Bouton toggle pour petits écrans */}
       <button
-        className="md:hidden p-4 text-blue-600"
+        className="md:hidden p-4 text-[#00529A]"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -42,9 +42,9 @@ const Sidebar = () => {
           <li>
             <a
               href="/dash-admin"
-              className={`hover:text-blue-500 ${
+              className={`hover:text-[#006BB3] ${
                 isActive("/dash-admin") && location.pathname === "/dash-admin"
-                  ? "text-blue-700 font-semibold"
+                  ? "text-[#00529A] font-semibold"
                   : ""
               }`}
             >
@@ -56,7 +56,7 @@ const Sidebar = () => {
           <li>
             <button
               onClick={() => setUserSubMenuOpen(!userSubMenuOpen)}
-              className="flex items-center justify-between w-full hover:text-blue-500"
+              className="flex items-center justify-between w-full hover:text-[#006BB3]"
             >
               <span>👤 Gestion d'utilisateur</span>
               {userSubMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -66,9 +66,9 @@ const Sidebar = () => {
                 <li>
                   <a
                     href="/dash-admin/manage-user/admins"
-                    className={`hover:text-blue-500 ${
+                    className={`hover:text-[#006BB3] ${
                       isActive("/dash-admin/manage-user/admins")
-                        ? "text-blue-700 font-semibold"
+                        ? "text-[#00529A] font-semibold"
                         : ""
                     }`}
                   >
@@ -78,9 +78,9 @@ const Sidebar = () => {
                 <li>
                   <a
                     href="/dash-admin/manage-user/users"
-                    className={`hover:text-blue-500 ${
+                    className={`hover:text-[#006BB3] ${
                       isActive("/dash-admin/manage-user/users")
-                        ? "text-blue-700 font-semibold"
+                        ? "text-[#00529A] font-semibold"
                         : ""
                     }`}
                   >
@@ -94,9 +94,9 @@ const Sidebar = () => {
           <li>
             <a
               href="/dash-admin/manage-client"
-              className={`hover:text-blue-500 ${
+              className={`hover:text-[#006BB3] ${
                 isActive("/dash-admin/manage-client")
-                  ? "text-blue-700 font-semibold"
+                  ? "text-[#00529A] font-semibold"
                   : ""
               }`}
             >
@@ -107,9 +107,9 @@ const Sidebar = () => {
           <li>
             <a
               href="/dash-admin/manage-station"
-              className={`hover:text-blue-500 ${
+              className={`hover:text-[#006BB3] ${
                 isActive("/dash-admin/manage-station")
-                  ? "text-blue-700 font-semibold"
+                  ? "text-[#00529A] font-semibold"
                   : ""
               }`}
             >
@@ -120,9 +120,9 @@ const Sidebar = () => {
           <li>
             <a
               href="/dash-admin/statistic"
-              className={`hover:text-blue-500 ${
+              className={`hover:text-[#006BB3] ${
                 isActive("/dash-admin/statistic")
-                  ? "text-blue-700 font-semibold"
+                  ? "text-[#00529A] font-semibold"
                   : ""
               }`}
             >
@@ -133,9 +133,9 @@ const Sidebar = () => {
           <li>
             <a
               href="/dash-admin/profile"
-              className={`hover:text-blue-500 ${
+              className={`hover:text-[#006BB3] ${
                 isActive("/dash-admin/profile")
-                  ? "text-blue-700 font-semibold"
+                  ? "text-[#00529A] font-semibold"
                   : ""
               }`}
             >
