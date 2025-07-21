@@ -17,10 +17,13 @@ import {
   PointElement,
   Tooltip,
   Legend,
+  RadialLinearScale,
+  ArcElement,
+  Filler,
 } from "chart.js";
 
 // import { Line, Bar, Pie } from "react-chartjs-2";
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar, Pie, Radar, Doughnut, PolarArea } from "react-chartjs-2";
 import annotationPlugin from "chartjs-plugin-annotation";
 import type { ChartOptions as ChartJSOptions } from "chart.js";
 
@@ -32,7 +35,10 @@ ChartJS.register(
   PointElement,
   Tooltip,
   Legend,
-  annotationPlugin
+  annotationPlugin,
+  ArcElement,
+  RadialLinearScale,
+  Filler,
 );
 
 // Wrapper pour gérer le chart avec destruction propre
@@ -116,8 +122,8 @@ const Statistic = () => {
       {
         label: "CO₂ (PPM)",
         data: mesures.map((m) => (typeof m.donnees?.co2 === "number" ? m.donnees.co2 : null)),
-        backgroundColor: "rgba(255, 206, 86, 1)",
-        borderColor: "rgba(255, 206, 86, 1)",
+        backgroundColor: "rgba(0, 82, 154, 0.4)",
+        borderColor: "#00529A",
         fill: false,
         tension: 0.4,
       },
@@ -197,9 +203,9 @@ const Statistic = () => {
             <ChartWrapper ref={barChartRef} type="bar" data={data} options={barOptions} />
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow">
+          <div className="bg-white p-4 rounded-lg shadow mb-6">
             <h2 className="text-lg font-semibold mb-2">Pie Chart</h2>
-            {/* <Pie
+            <Pie
               data={{
                 labels,
                 datasets: [
@@ -217,8 +223,68 @@ const Statistic = () => {
                 ],
               }}
               options={{ plugins: { legend: { position: "bottom" } } }}
-            /> */}
+            />
           </div>
+
+          <div className="bg-white p-4 rounded-lg shadow mb-6">
+            <h2 className="text-lg font-semibold mb-2">Radar Chart</h2>
+            <Radar
+              data={data}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { display: true },
+                },
+              }}
+            />
+          </div>
+
+          <div className="bg-white p-4 rounded-lg shadow mb-6">
+            <h2 className="text-lg font-semibold mb-2">Doughnut Chart</h2>
+            <Doughnut
+              data={{
+                labels,
+                datasets: [
+                  {
+                    label: "CO₂ (PPM)",
+                    data: mesures.map((m) => (typeof m.donnees?.co2 === "number" ? m.donnees.co2 : 0)),
+                    backgroundColor: mesures.map((m) => {
+                      const co2 = m.donnees?.co2 ?? 0;
+                      if (co2 <= 400) return "green";         // Excellent
+                      if (co2 <= 600) return "#22c55e";       // Bon
+                      if (co2 <= 1200) return "#facc15";      // Moyen
+                      return "#f87171";                       // Mauvais
+                    }),
+                  },
+                ],
+              }}
+              options={{ plugins: { legend: { position: "bottom" } } }}
+            />
+          </div>
+
+          <div className="bg-white p-4 rounded-lg shadow mb-6">
+            <h2 className="text-lg font-semibold mb-2">Polar Area Chart</h2>
+            <PolarArea
+              data={{
+                labels,
+                datasets: [
+                  {
+                    label: "CO₂ (PPM)",
+                    data: mesures.map((m) => (typeof m.donnees?.co2 === "number" ? m.donnees.co2 : 0)),
+                    backgroundColor: mesures.map((m) => {
+                      const co2 = m.donnees?.co2 ?? 0;
+                      if (co2 <= 400) return "green";
+                      if (co2 <= 600) return "#22c55e";
+                      if (co2 <= 1200) return "#facc15";
+                      return "#f87171";
+                    }),
+                  },
+                ],
+              }}
+              options={{ plugins: { legend: { position: "bottom" } } }}
+            />
+          </div>
+
         </>
       ) : selectedStationId && mesures.length === 0 ? (
         <p className="text-gray-500">Aucune mesure disponible pour cette station.</p>

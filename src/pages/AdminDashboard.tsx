@@ -14,11 +14,11 @@ const sendNotification = (stationName: string, value: number) => {
 };
 
 const getCO2Status = (value: number) => {
-  if (value <= 400) return { color: "bg-green-500", message: "Excellent" };
-  if (value <= 600) return { color: "bg-green-400", message: "Bon" };
-  if (value <= 1200) return { color: "bg-yellow-400", message: "Moyen" };
-  if (value <= 2000) return { color: "bg-red-400", message: "Mauvais" };
-  return { color: "bg-red-600", message: "Critique" };
+  if (value <= 400) return { color: "text-green-500", message: "Excellent" };
+  if (value <= 600) return { color: "text-green-400", message: "Bon" };
+  if (value <= 1200) return { color: "text-yellow-400", message: "Moyen" };
+  if (value <= 2000) return { color: "text-red-400", message: "Mauvais" };
+  return { color: "text-red-600", message: "Critique" };
 };
 
 const AdminDashboard = () => {
@@ -78,39 +78,40 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex-1 p-6 bg-gray-100 overflow-y-auto">
-      <h1 className="text-2xl font-bold mb-4">Tableau de bord Admin</h1>
-
-      <div className="flex flex-wrap gap-4 mb-6">
-        <button onClick={() => navigate("add-client")} className="bg-blue-500 text-white px-4 py-2 rounded">🏢 Ajouter un client</button>
-        <button onClick={() => navigate("add-user")} className="bg-green-500 text-white px-4 py-2 rounded">👤 Ajouter un utilisateur</button>
-        <button onClick={() => navigate("add-station")} className="bg-purple-500 text-white px-4 py-2 rounded">📡 Ajouter une station</button>
-        <button onClick={() => navigate("add-admin")} className="bg-red-500 text-white px-4 py-2 rounded">🛡️ Ajouter un admin</button>
+      <h1 className="text-3xl font-bold mb-6">Tableau de bord Admin</h1>
+  
+      <div className="flex flex-wrap gap-4 mb-8">
+        <button onClick={() => navigate("add-client")} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-base font-medium">🏢 Ajouter un client</button>
+        <button onClick={() => navigate("add-user")} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded text-base font-medium">👤 Ajouter un utilisateur</button>
+        <button onClick={() => navigate("add-station")} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded text-base font-medium">📡 Ajouter une station</button>
+        <button onClick={() => navigate("add-admin")} className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded text-base font-medium">🛡️ Ajouter un admin</button>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+  
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {stations.map((station) => {
           const mesure = mesuresByStation[station.id];
           const co2 = mesure?.donnees?.co2 ?? "N/A";
           const humidity = mesure?.donnees?.humidity ?? "N/A";
-          const status = typeof co2 === "number" ? getCO2Status(co2) : { color: "bg-gray-300", message: "N/A" };
-
+          const status = typeof co2 === "number" ? getCO2Status(co2) : { color: "text-gray-500", message: "N/A" };
+  
           return (
             <div
               key={station.id}
-              className={`p-4 rounded shadow text-white cursor-pointer hover:opacity-90 ${status.color}`}
+              className="p-5 rounded-lg shadow-md bg-white hover:shadow-lg cursor-pointer transition"
               onClick={() => navigate(`/dash-admin/statistic/${station.id}`)}
             >
-              <h2 className="text-lg font-semibold">{station.nom}</h2>
-              <p className="text-sm italic">{station.proprietaire}</p>
-              <p className="text-2xl mt-2">CO₂ : {co2}</p>
-              <p className="text-2xl mt-2">humidity : {humidity}</p>
-              <p className="italic">{status.message}</p>
+              <h2 className="text-3xl font-semibold text-gray-800">{station.nom}</h2>
+              <p className="text-l italic text-gray-600">{station.proprietaire}</p>
+              <p className={`text-2xl mt-4 font-bold ${status.color}`}>CO₂ : {co2}</p>
+              <p className="text-2xl mt-2 text-blue-800 font-semibold">Humidité : {humidity}</p>
+              <p className={`italic mt-1 text-l ${status.color}`}>{status.message}</p>
             </div>
           );
         })}
       </div>
     </div>
   );
+  
 };
 
 export default AdminDashboard;
