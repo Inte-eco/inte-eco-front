@@ -43,6 +43,7 @@ const AppRouter = () => {
                     <Route index element={<ClientDashboard />} />
                     <Route path="show-users" element={<ShowUsers />} />
                     <Route path="user-profile" element={<ClientProfile />} />
+                    <Route path="statistic/:stationId" element={<Statistic />} />
                 </Route>
 
                 {/* Admin routes with layout & protection */}

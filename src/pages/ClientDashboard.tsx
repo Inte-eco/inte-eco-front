@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   collection,
   onSnapshot,
@@ -8,107 +9,20 @@ import {
   limit,
 } from "firebase/firestore";
 import { db } from "../services/Firebase/FirebaseConfig";
-import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-import annotationPlugin from "chartjs-plugin-annotation";
-import type { ChartOptions } from "chart.js";
 
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-  annotationPlugin
-);
-
-const options: ChartOptions<"line"> = {
-  responsive: true,
-  plugins: {
-    legend: { display: true },
-    annotation: {
-      annotations: {
-        excellent: {
-          type: "line",
-          yMin: 400,
-          yMax: 400,
-          borderColor: "green",
-          borderWidth: 2,
-          label: {
-            content: "Excellent",
-            display: true,
-            backgroundColor: "green",
-            color: "white",
-            position: "end",
-          },
-        },
-        bon: {
-          type: "line",
-          yMin: 600,
-          yMax: 600,
-          borderColor: "#22c55e",
-          borderWidth: 2,
-          label: {
-            content: "Bon",
-            display: true,
-            backgroundColor: "#22c55e",
-            color: "white",
-            position: "end",
-          },
-        },
-        moyen: {
-          type: "line",
-          yMin: 1200,
-          yMax: 1200,
-          borderColor: "#facc15",
-          borderWidth: 2,
-          label: {
-            content: "Moyen",
-            display: true,
-            backgroundColor: "#facc15",
-            color: "black",
-            position: "end",
-          },
-        },
-        mauvais: {
-          type: "line",
-          yMin: 2000,
-          yMax: 2000,
-          borderColor: "#f87171",
-          borderWidth: 2,
-          label: {
-            content: "Mauvais",
-            display: true,
-            backgroundColor: "#f87171",
-            color: "black",
-            position: "end",
-          },
-        },
-      },
-    },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
+const getCO2Status = (value: number) => {
+  if (value <= 400) return { color: "text-green-500", message: "Excellent" };
+  if (value <= 600) return { color: "text-green-400", message: "Bon" };
+  if (value <= 1200) return { color: "text-yellow-400", message: "Moyen" };
+  if (value <= 2000) return { color: "text-red-400", message: "Mauvais" };
+  return { color: "text-red-600", message: "Critique" };
 };
 
 const ClientDashboard = () => {
+  const navigate = useNavigate();
   const clientUid = sessionStorage.getItem("clientUid");
   const [stations, setStations] = useState<any[]>([]);
-  const [mesuresByStation, setMesuresByStation] = useState<Record<string, any[]>>({});
-
-  console.log(clientUid)
+  const [mesuresByStation, setMesuresByStation] = useState<Record<string, any>>({});
 
   // Charger les stations du client
   useEffect(() => {
@@ -130,21 +44,23 @@ const ClientDashboard = () => {
     return () => unsubscribe();
   }, [clientUid]);
 
-  // Charger les mesures de chaque station
+  // Charger les dernières mesures de chaque station
   useEffect(() => {
     const unsubscribes = stations.map((station) => {
       const q = query(
         collection(db, "stations", station.id, "mesures"),
-        orderBy("timestamp", "asc"),
-        limit(50)
+        orderBy("timestamp", "desc"),
+        limit(1)
       );
 
       return onSnapshot(q, (snapshot) => {
-        const data = snapshot.docs.map((doc) => doc.data());
-        setMesuresByStation((prev) => ({
-          ...prev,
-          [station.id]: data,
-        }));
+        const lastMesure = snapshot.docs[0]?.data();
+        if (lastMesure) {
+          setMesuresByStation((prev) => ({
+            ...prev,
+            [station.id]: lastMesure,
+          }));
+        }
       });
     });
 
@@ -153,50 +69,35 @@ const ClientDashboard = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">Tableau de bord Client</h1>
+      <h1 className="text-3xl font-bold mb-6">Tableau de bord Client</h1>
 
       {stations.length === 0 ? (
         <p className="text-gray-500">Aucune station liée à ce compte.</p>
       ) : (
-        stations.map((station) => {
-          const mesures = mesuresByStation[station.id] ?? [];
-          const labels = mesures.map((m) =>
-            new Date(m.timestamp).toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          );
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {stations.map((station) => {
+            const mesure = mesuresByStation[station.id];
+            const co2 = mesure?.donnees?.co2 ?? "N/A";
+            const humidity = mesure?.donnees?.humidity ?? "N/A";
+            const status = typeof co2 === "number"
+              ? getCO2Status(co2)
+              : { color: "text-gray-500", message: "N/A" };
 
-          const data = {
-            labels,
-            datasets: [
-              {
-                label: "CO₂ (PPM)",
-                data: mesures.map((m) => m.donnees?.co2 ?? null),
-                backgroundColor: "rgba(255, 206, 86, 1)",
-                borderColor: "rgba(255, 206, 86, 1)",
-                fill: false,
-                tension: 0.4,
-              },
-            ],
-          };
-
-          return (
-            <div
-              key={station.id}
-              className="bg-white p-4 rounded-lg shadow mb-6"
-            >
-              <h2 className="text-lg font-semibold mb-2">
-                {station.nom} ({station.proprietaire})
-              </h2>
-              {mesures.length > 0 ? (
-                <Line data={data} options={options} />
-              ) : (
-                <p className="text-gray-500">Aucune mesure disponible.</p>
-              )}
-            </div>
-          );
-        })
+            return (
+              <div
+                key={station.id}
+                className="p-5 rounded-lg shadow-md bg-white hover:shadow-lg cursor-pointer transition"
+                onClick={() => navigate(`/dashboard/statistic/${station.id}`)}
+              >
+                <h2 className="text-2xl font-semibold text-gray-800">{station.nom}</h2>
+                <p className="text-sm italic text-gray-600">{station.proprietaire}</p>
+                <p className={`text-xl mt-4 font-bold ${status.color}`}>CO₂ : {co2}</p>
+                <p className="text-xl mt-2 text-blue-800 font-semibold">Humidité : {humidity}</p>
+                <p className={`italic mt-1 text-base ${status.color}`}>{status.message}</p>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
