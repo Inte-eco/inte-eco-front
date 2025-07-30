@@ -102,7 +102,7 @@ const AdminDashboard = () => {
             >
               <h2 className="text-3xl font-semibold text-gray-800">{station.nom}</h2>
               <p className="text-l italic text-gray-600">{station.proprietaire}</p>
-              <p className={`text-2xl mt-4 font-bold ${status.color}`}>CO₂ : {(co2 / 1_000_000 * 100).toFixed(4) + '%'}</p>
+              <p className={`text-2xl mt-4 font-bold ${status.color}`}>CO₂ : {co2} ppm</p>
               <p className="text-2xl mt-2 text-blue-800 font-semibold">Humidité : {typeof humidity === "number" ? (humidity/1000).toFixed(3)+ '%' : humidity}</p>
               <p className={`italic mt-1 text-l ${status.color}`}>{status.message}</p>
             </div>
